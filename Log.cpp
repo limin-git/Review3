@@ -123,7 +123,7 @@ void Log::initialize( const boost::program_options::variables_map& vm )
                     );
 
                 m_file_sink->set_formatter( m_formatter );
-                std::locale loc = boost::locale::generator()("en_US.UTF-8"); // TODO: crash when logging wide characters
+                std::locale loc = boost::locale::generator()("en_US.UTF-8");
                 m_file_sink->imbue( loc );
             }
         }

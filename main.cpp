@@ -1,13 +1,14 @@
 #include "stdafx.h"
 #include "Log.h"
-#include "ReviewManager.h"
 #include "OptionString.h"
+//#include "ReviewManager.h"
+//#include "OptionString.h"
 #include "ProgramOptions.h"
 #include "ConsoleCommand.h"
 #include "Utility.h"
 
 
-int main(int argc, char* argv[])
+int _tmain(int argc, _TCHAR* argv[])
 {
     boost::program_options::options_description desc( "Options", 100 );
     desc.add_options()
@@ -15,7 +16,7 @@ int main(int argc, char* argv[])
         ( file_name_option, boost::program_options::value<std::string>(),  "the file to be reviewed" )
         ( file_history_option, boost::program_options::value<std::string>(),  ".history" )
         ( file_review_option, boost::program_options::value<std::string>(),  ".review, history cache" )
-        ( config_option, boost::program_options::value<std::string>()->default_value( "review.cfg" ),  "config file" )
+        ( config_option, boost::program_options::wvalue<std::wstring>()->default_value( L"review.cfg" ),  "config file" )
         ( review_schedule, boost::program_options::value<std::string>(), "review schedule (time span list)" )
         ( review_minimal_time_option, boost::program_options::value<boost::timer::nanosecond_type>()->default_value( 500 ),  "in miniseconds" )
         ( review_max_cache_size_option, boost::program_options::value<size_t>()->default_value( 100 ),  "normally write to .review, write to .history every max-cache-size times" )
@@ -52,6 +53,7 @@ int main(int argc, char* argv[])
 
     Log::initialize( vm );
 
+#if 0
     if ( ! vm.count( file_name_option ) )
     {
         std::cout << "must set " << file_name_option;
@@ -96,6 +98,7 @@ int main(int argc, char* argv[])
     {
         std::cout << "caught exception, exit." << std::endl;
     }
+#endif
 
 	return 0;
 }

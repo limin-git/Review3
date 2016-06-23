@@ -3,10 +3,10 @@
 #include "Log.h"
 
 
-std::map<std::string, DirectoryWatcher::signal_type*> DirectoryWatcher::m_signals;
+std::map<std::wstring, DirectoryWatcher::signal_type*> DirectoryWatcher::m_signals;
 
 
-void DirectoryWatcher::connect_to_signal( slot_type slot, const std::string& file )
+void DirectoryWatcher::connect_to_signal( slot_type slot, const std::wstring& file )
 {
     m_signals[file] = new signal_type;
     m_signals[file]->connect( slot );
@@ -14,7 +14,7 @@ void DirectoryWatcher::connect_to_signal( slot_type slot, const std::string& fil
 }
 
 
-void DirectoryWatcher::watch_directory_thread( const std::string& file )
+void DirectoryWatcher::watch_directory_thread( const std::wstring& file )
 {
     if ( ! boost::filesystem::exists( file ) )
     {
@@ -28,7 +28,7 @@ void DirectoryWatcher::watch_directory_thread( const std::string& file )
         return;
     }
 
-    std::string directory = boost::filesystem::system_complete( file ).parent_path().string();
+    std::wstring directory = boost::filesystem::system_complete( file ).parent_path().wstring();
     HANDLE handle = ::FindFirstChangeNotification( directory.c_str(), FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE );
 
     if ( handle == INVALID_HANDLE_VALUE )

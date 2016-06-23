@@ -6,7 +6,7 @@
 #include "DirectoryWatcher.h"
 
 
-std::string ProgramOptions::m_config_file;
+std::wstring ProgramOptions::m_config_file;
 std::time_t ProgramOptions::m_last_write_time;
 signal_type ProgramOptions::m_signal;
 boost::mutex ProgramOptions::m_mutex;
@@ -14,29 +14,30 @@ boost::program_options::variables_map ProgramOptions::m_vm;
 const boost::program_options::options_description* ProgramOptions::m_desc;
 
 
-void ProgramOptions::initialize( int argc, char* argv[], const boost::program_options::options_description& desc )
+void ProgramOptions::initialize( int argc, wchar_t* argv[], const boost::program_options::options_description& desc )
 {
     try
     {
         m_desc = &desc;
 
-        store( boost::program_options::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), m_vm );
+        store( boost::program_options::wcommand_line_parser(argc, argv).options(desc).allow_unregistered().run(), m_vm );
         notify( m_vm );
 
+#if 0
         if ( m_vm.count( config_option ) )
         {
-            m_config_file = m_vm[config_option].as<std::string>();
+            m_config_file = m_vm[config_option].as<std::wstring>();
 
             if ( boost::filesystem::exists( m_config_file ) )
             {
-                store( boost::program_options::parse_config_file<char>( m_config_file.c_str(), desc, true ), m_vm );
+                store( boost::program_options::parse_config_file<wchar_t>( std::wifstream( m_config_file.c_str() ), desc, true ), m_vm );
                 notify( m_vm );
                 m_last_write_time = boost::filesystem::last_write_time( m_config_file );
             }
 
             DirectoryWatcher::connect_to_signal( boost::bind( &ProgramOptions::process_config_file_change ), m_config_file );
         }
-
+#endif
         return;
     }
     catch ( boost::filesystem::filesystem_error& e )
@@ -79,7 +80,7 @@ void ProgramOptions::process_config_file_change()
         LOG_DEBUG << m_config_file;
 
         m_vm.clear();
-        store( boost::program_options::parse_config_file<char>( m_config_file.c_str(), *m_desc, true ), m_vm );
+        store( boost::program_options::parse_config_file<wchar_t>( std::wifstream( m_config_file.c_str() ), *m_desc, true ), m_vm );
         notify( m_vm );
         m_signal( m_vm );
         m_last_write_time = t;

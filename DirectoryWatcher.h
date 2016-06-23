@@ -10,10 +10,10 @@ public:
 
 public:
 
-    static void connect_to_signal( slot_type slot, const std::string& file );
-    static void watch_directory_thread( const std::string& file );
+    static void connect_to_signal( slot_type slot, const std::wstring& file );
+    static void watch_directory_thread( const std::wstring& file );
 
 public:
 
-    static std::map<std::string, signal_type*> m_signals;
+    static std::map<std::wstring, signal_type*> m_signals;
 };

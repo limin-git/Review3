@@ -21,7 +21,7 @@
 			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="0"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -95,7 +95,7 @@
 			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="0"
+			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -284,11 +284,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SoundUtility.cpp"
+				RelativePath=".\FileUtility.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SoundUtility.h"
+				RelativePath=".\FileUtility.h"
 				>
 			</File>
 			<File
@@ -313,19 +313,7 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\ConsoleCommand.cpp"
-			>
-		</File>
-		<File
 			RelativePath=".\DirectoryWatcher.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\History.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Loader.cpp"
 			>
 		</File>
 		<File
@@ -342,18 +330,6 @@
 		</File>
 		<File
 			RelativePath=".\review.cfg"
-			>
-		</File>
-		<File
-			RelativePath=".\ReviewManager.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\ReviewString.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Speech.cpp"
 			>
 		</File>
 	</Files>
