@@ -76,7 +76,7 @@ void ReviewManager::review()
 
     m_history->initialize();
     m_history->synchronize_history( m_loader->get_string_hash_set() );
-    set_title();
+    set_console_title();
     update();
     m_update_thread = boost::thread( boost::bind( &ReviewManager::update_thread, this ) );
 
@@ -188,7 +188,7 @@ ReviewString ReviewManager::get_next()
 
         if ( m_reviewing_list.empty() )
         {
-            set_title();
+            set_console_title();
             return ReviewString();
         }
     }
@@ -226,7 +226,7 @@ ReviewString ReviewManager::get_next()
     m_hash_number_map[hash] = m_review_number++;
 
     LOG_TRACE << "end";
-    set_title();
+    set_console_title();
     return ReviewString( hash, m_loader, m_history, m_speech, m_display_format );
 }
 
@@ -265,16 +265,15 @@ ReviewString ReviewManager::get_previous()
 
 std::wstring ReviewManager::wait_user_interaction()
 {
-    static HANDLE stdinput = GetStdHandle(STD_INPUT_HANDLE);
+    static HANDLE cout = GetStdHandle(STD_INPUT_HANDLE);
     static INPUT_RECORD input_buffer[128];
     static DWORD num_read = 0;
 
-    Utility::disable_console_mode( ENABLE_QUICK_EDIT_MODE  );
-    SetConsoleMode( stdinput, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT );
+    SetConsoleMode( cout, ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS | ENABLE_PROCESSED_INPUT );
 
     while ( true )
     {
-        ReadConsoleInput( stdinput, input_buffer, 128, &num_read );
+        ReadConsoleInput( cout, input_buffer, 128, &num_read );
 
         for ( size_t i = 0; i < num_read; i++)
         {
@@ -337,21 +336,30 @@ std::wstring ReviewManager::wait_user_interaction()
 }
 
 
-void ReviewManager::set_title()
+void ReviewManager::set_console_title()
 {
     std::wstringstream strm;
-    strm << m_file_name << L" - ";
+    static const std::wstring file_name = boost::filesystem::path( m_file_name ).filename().wstring();
+    
+    strm << file_name << L" - ";
     
     if ( 0 == m_reviewing_set.size() && m_history->is_finished() )
     {
-        strm << L"finished.";
+        strm << L"Finish.";
     }
     else
     {
         strm << m_reviewing_set.size();
     }
 
-    SetConsoleTitle( strm.str().c_str() );
+    static std::wstring current_title;
+    std::wstring new_title = strm.str();
+
+    if ( new_title != current_title )
+    {
+        SetConsoleTitle( new_title.c_str() );
+        current_title = new_title;
+    }
 }
 
 
@@ -395,7 +403,7 @@ void ReviewManager::update()
             m_reviewing_list.sort( order );
         }
 
-        set_title();
+        set_console_title();
         LOG_DEBUG << "sort " << m_reviewing_list.size();
         // LOG_TEST<< std::endl << get_hash_list_string( m_reviewing_list );
     }
@@ -567,7 +575,7 @@ void ReviewManager::listen_thread()
         Utility::play_or_tts_list( word_paths );
     }
 
-    set_title();
+    set_console_title();
 }
 
 

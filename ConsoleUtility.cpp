@@ -149,10 +149,10 @@ namespace Utility
 
     void disable_console_mode( DWORD disable_mode, HANDLE handle )
     {
-        // MUST call this before SetConsoleMode
-        DWORD mode = 0;
-        GetConsoleMode( handle, &mode );
-        SetConsoleMode( handle, mode & ~disable_mode );
+        //Note: no use, can not take effect
+        //DWORD mode = 0;
+        //GetConsoleMode( handle, &mode );
+        //SetConsoleMode( handle, 0 );
     }
 
 

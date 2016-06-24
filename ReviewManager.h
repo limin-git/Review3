@@ -24,7 +24,7 @@ public:
     ReviewString get_next();
     ReviewString get_previous();
     static std::wstring wait_user_interaction();
-    void set_title();
+    void set_console_title();
     void update();
     void update_thread();
     void update_option( const boost::program_options::variables_map& vm ); // ProgramOptions slot

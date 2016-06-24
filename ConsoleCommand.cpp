@@ -8,13 +8,10 @@
 
 ConsoleCommand::ConsoleCommand()
 {
-    m_handle = GetStdHandle( STD_OUTPUT_HANDLE );
-    m_cp = GetConsoleCP();
-    m_output_cp = GetConsoleOutputCP();
-    m_screen_buffer.cbSize = sizeof( CONSOLE_SCREEN_BUFFER_INFOEX );
-    GetConsoleScreenBufferInfoEx( m_handle, &m_screen_buffer );
-    m_font_info.cbSize = sizeof( CONSOLE_FONT_INFOEX );
-    GetCurrentConsoleFontEx( m_handle, FALSE, &m_font_info );
+    cin = GetStdHandle( STD_INPUT_HANDLE );
+    cout = CreateConsoleScreenBuffer( GENERIC_READ | GENERIC_WRITE, 0, 0, CONSOLE_TEXTMODE_BUFFER, 0 );
+    SetStdHandle( STD_OUTPUT_HANDLE, cout );
+    SetConsoleActiveScreenBuffer( cout );
 
     show_console_cursor( false );
     disable_console_system_buttons();
@@ -25,10 +22,20 @@ ConsoleCommand::ConsoleCommand()
 
 ConsoleCommand::~ConsoleCommand()
 {
-    SetConsoleCP( m_cp );
-    SetConsoleOutputCP( m_output_cp );
-    SetConsoleScreenBufferInfoEx( m_handle, &m_screen_buffer );
-    SetCurrentConsoleFontEx( m_handle, FALSE, &m_font_info );
+    CloseHandle( cout );
+    //useful code
+    //cout = GetStdHandle( STD_OUTPUT_HANDLE );
+    //cin = GetStdHandle( STD_INPUT_HANDLE );
+    //m_cp = GetConsoleCP();
+    //m_output_cp = GetConsoleOutputCP();
+    //m_screen_buffer.cbSize = sizeof( CONSOLE_SCREEN_BUFFER_INFOEX );
+    //GetConsoleScreenBufferInfoEx( cout, &m_screen_buffer );
+    //m_font_info.cbSize = sizeof( CONSOLE_FONT_INFOEX );
+    //GetCurrentConsoleFontEx( cout, FALSE, &m_font_info );
+    //SetConsoleCP( m_cp );
+    //SetConsoleOutputCP( m_output_cp );
+    //SetConsoleScreenBufferInfoEx( cout, &m_screen_buffer );
+    //SetCurrentConsoleFontEx( cout, FALSE, &m_font_info );
 }
 
 
@@ -92,16 +99,14 @@ void ConsoleCommand::set_font_face_name( const std::wstring& name )
         return;
     }
 
-    HANDLE m_handle = GetStdHandle( STD_OUTPUT_HANDLE );
     CONSOLE_FONT_INFOEX f;
     f.cbSize = sizeof( CONSOLE_FONT_INFOEX );
-    GetCurrentConsoleFontEx( m_handle, FALSE, &f );
+    GetCurrentConsoleFontEx( cout, FALSE, &f );
     if ( f.FaceName != name )
     {
-        //SetConsoleOutputCP( face_name == L"新宋体" ? 936 : CP_UTF8 );
         SetConsoleOutputCP( name == L"新宋体" ? 936 : 936 );
         wcscpy_s( f.FaceName, name.c_str() );
-        SetCurrentConsoleFontEx( m_handle, FALSE, &f );
+        SetCurrentConsoleFontEx( cout, FALSE, &f );
     }
 }
 
@@ -110,11 +115,11 @@ void ConsoleCommand::set_font_size( SHORT font_size )
 {
     CONSOLE_FONT_INFOEX f;
     f.cbSize = sizeof( CONSOLE_FONT_INFOEX );
-    GetCurrentConsoleFontEx( m_handle, FALSE, &f );
+    GetCurrentConsoleFontEx( cout, FALSE, &f );
     if ( f.dwFontSize.Y != font_size )
     {
         f.dwFontSize.Y = font_size;
-        SetCurrentConsoleFontEx( m_handle, FALSE, &f );
+        SetCurrentConsoleFontEx( cout, FALSE, &f );
     }
 }
 
@@ -122,7 +127,7 @@ void ConsoleCommand::set_font_size( SHORT font_size )
 void ConsoleCommand::set_console_width( SHORT width )
 {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo( m_handle, &csbi );
+    GetConsoleScreenBufferInfo( cout, &csbi );
     COORD cur_size = { csbi.srWindow.Right - csbi.srWindow.Left + 1, csbi.srWindow.Bottom - csbi.srWindow.Top + 1 };
 
     if ( cur_size.X != width )
@@ -135,7 +140,7 @@ void ConsoleCommand::set_console_width( SHORT width )
 void ConsoleCommand::set_console_height( SHORT height )
 {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo( m_handle, &csbi );
+    GetConsoleScreenBufferInfo( cout, &csbi );
     COORD cur_size = { csbi.srWindow.Right - csbi.srWindow.Left + 1, csbi.srWindow.Bottom - csbi.srWindow.Top + 1 };
 
     if ( cur_size.Y != height )
@@ -150,20 +155,20 @@ void ConsoleCommand::set_console_size( SHORT width, SHORT height )
     COORD coord = { 0, 0 };
     COORD size = { width, height };
     CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo( m_handle, &csbi );
+    GetConsoleScreenBufferInfo( cout, &csbi );
     COORD cur_size = { csbi.srWindow.Right - csbi.srWindow.Left + 1, csbi.srWindow.Bottom - csbi.srWindow.Top + 1 };
 
     if ( (size.X != cur_size.X) || (size.Y != cur_size.Y) )
     {
         COORD tmp_buf_size = { std::max<int>(cur_size.X, width), std::max<int>(cur_size.Y, height) };
-        SetConsoleScreenBufferSize( m_handle, tmp_buf_size );
+        SetConsoleScreenBufferSize( cout, tmp_buf_size );
 
         SMALL_RECT window = csbi.srWindow;
         window.Right = window.Left + width - 1;
         window.Bottom = window.Top + height - 1;
-        SetConsoleWindowInfo( m_handle, TRUE, &window );
+        SetConsoleWindowInfo( cout, TRUE, &window );
 
-        SetConsoleScreenBufferSize( m_handle, size );
+        SetConsoleScreenBufferSize( cout, size );
     }
 }
 
@@ -173,22 +178,22 @@ void ConsoleCommand::set_console_color( WORD color )
     DWORD written = 0;
     COORD coord = { 0, 0 };
     CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo( m_handle, &csbi );
+    GetConsoleScreenBufferInfo( cout, &csbi );
     csbi.wAttributes = color;
-    SetConsoleTextAttribute( m_handle, csbi.wAttributes );
-    FillConsoleOutputAttribute( m_handle, csbi.wAttributes, csbi.dwSize.X * csbi.dwSize.Y, coord, &written );
+    SetConsoleTextAttribute( cout, csbi.wAttributes );
+    FillConsoleOutputAttribute( cout, csbi.wAttributes, csbi.dwSize.X * csbi.dwSize.Y, coord, &written );
 }
 
 
 void ConsoleCommand::show_console_cursor( BOOL visible )
 {
     CONSOLE_CURSOR_INFO cursor_info;
-    GetConsoleCursorInfo( m_handle, &cursor_info );
+    GetConsoleCursorInfo( cout, &cursor_info );
 
     if ( visible != cursor_info.bVisible )
     {
         cursor_info.bVisible = visible;
-        SetConsoleCursorInfo( m_handle, &cursor_info );
+        SetConsoleCursorInfo( cout, &cursor_info );
     }
 }
 

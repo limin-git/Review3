@@ -78,7 +78,7 @@ std::wstring ReviewString::review()
                     return action;
                 }
 
-                std::cout << std::endl;
+                stdcout << L"\n";
                 should_wait = false;
                 should_new_line = false;
             }
@@ -94,18 +94,16 @@ std::wstring ReviewString::review()
                 if ( ! first_content.empty() )
                 {
                     Utility::cls();
-                    std::cout << "\t";
-                    Utility::write_console( first_content );
-                    std::cout << std::endl;
+                    stdcout << L"\t" << first_content << "\n";
                     first_content.clear();
                 }
 
                 if ( should_new_line )
                 {
-                    std::cout << "\n";
+                    stdcout << L"\n";
                 }
 
-                std::cout << "\t";
+                stdcout << L"\t";
 
                 if ( is_first_part )
                 {
@@ -115,10 +113,9 @@ std::wstring ReviewString::review()
                 }
                 else
                 {
-                    Utility::write_console( content );
+                    stdcout << content;
                 }
 
-                std::cout << std::flush;
                 should_wait = true;
                 should_new_line = true;
             }
@@ -128,8 +125,8 @@ std::wstring ReviewString::review()
     if ( m_history )
     {
         LOG_DEBUG
-            << m_string << std::endl
-            << "(round: " << m_history->get_review_round( m_hash ) << ") "
+            << m_string << std::endl << "\t\t"
+            << "[Round: " << m_history->get_review_round( m_hash ) << "] "
             << Utility::duration_string_from_time_list( m_history->get_times( m_hash ) );
     }
 

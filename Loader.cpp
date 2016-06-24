@@ -7,7 +7,6 @@
 #include "ProgramOptions.h"
 
 
-
 Loader::Loader( boost::function<size_t (const std::wstring&)> hash_function )
     : m_last_write_time( 0 ),
       m_hash_function( hash_function )

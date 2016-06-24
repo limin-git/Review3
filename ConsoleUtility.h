@@ -18,6 +18,29 @@ namespace Utility
     void cls2( HANDLE handle = cout() );
     void write_console( const std::string& s, int code_page = CP_UTF8, HANDLE handle = cout() );
     void write_console( const std::wstring& ws, HANDLE handle = cout() );
-    void write_console_on_center( const std::wstring& s, HANDLE output = GetStdHandle( STD_OUTPUT_HANDLE ) );
+    void write_console_on_center( const std::wstring& s, HANDLE output = cout() );
     std::wostream& print_font_info( std::wostream&, const CONSOLE_FONT_INFOEX& info );
 }
+
+
+struct WriteConsoleHelper {};
+WriteConsoleHelper& operator << ( WriteConsoleHelper& helper, const std::wstring& ws )
+{
+    Utility::write_console( ws );
+    return helper;
+}
+
+WriteConsoleHelper& operator << ( WriteConsoleHelper& helper, const wchar_t* ws )
+{
+    Utility::write_console( ws );
+    return helper;
+}
+
+
+WriteConsoleHelper& operator << ( WriteConsoleHelper& helper, wchar_t* ws )
+{
+    Utility::write_console( ws );
+    return helper;
+}
+
+#define stdcout WriteConsoleHelper helper; helper

@@ -22,7 +22,8 @@ public:
 
 public:
 
-    HANDLE m_handle;
+    HANDLE cout;
+    HANDLE cin;
     UINT m_cp;
     UINT m_output_cp;
     CONSOLE_SCREEN_BUFFER_INFOEX m_screen_buffer;
