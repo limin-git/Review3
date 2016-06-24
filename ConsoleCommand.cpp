@@ -11,6 +11,10 @@ ConsoleCommand::ConsoleCommand()
     m_handle = GetStdHandle( STD_OUTPUT_HANDLE );
     m_cp = GetConsoleCP();
     m_output_cp = GetConsoleOutputCP();
+    m_screen_buffer.cbSize = sizeof( CONSOLE_SCREEN_BUFFER_INFOEX );
+    GetConsoleScreenBufferInfoEx( m_handle, &m_screen_buffer );
+    m_font_info.cbSize = sizeof( CONSOLE_FONT_INFOEX );
+    GetCurrentConsoleFontEx( m_handle, FALSE, &m_font_info );
 
     show_console_cursor( false );
     disable_console_system_buttons();
@@ -23,6 +27,8 @@ ConsoleCommand::~ConsoleCommand()
 {
     SetConsoleCP( m_cp );
     SetConsoleOutputCP( m_output_cp );
+    SetConsoleScreenBufferInfoEx( m_handle, &m_screen_buffer );
+    SetCurrentConsoleFontEx( m_handle, FALSE, &m_font_info );
 }
 
 

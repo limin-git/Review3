@@ -25,4 +25,6 @@ public:
     HANDLE m_handle;
     UINT m_cp;
     UINT m_output_cp;
+    CONSOLE_SCREEN_BUFFER_INFOEX m_screen_buffer;
+    CONSOLE_FONT_INFOEX m_font_info;
 };

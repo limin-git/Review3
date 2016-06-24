@@ -29,7 +29,7 @@ void ProgramOptions::initialize( int argc, wchar_t* argv[], const boost::program
 
             if ( boost::filesystem::exists( m_config_file ) )
             {
-                std::wstringstream strm( Utility::wstring_from_file( m_config_file.c_str(), CP_UTF8 ) );
+                std::wstringstream strm( Utility::wstring_from_file( m_config_file.c_str() ) );
                 store( boost::program_options::parse_config_file<wchar_t>( strm, desc, true ), m_vm );
                 notify( m_vm );
                 m_last_write_time = boost::filesystem::last_write_time( m_config_file );
@@ -80,7 +80,7 @@ void ProgramOptions::process_config_file_change()
         LOG_DEBUG << m_config_file;
 
         m_vm.clear();
-        std::wstringstream strm( Utility::wstring_from_file( m_config_file.c_str(), CP_UTF8 ) );
+        std::wstringstream strm( Utility::wstring_from_file( m_config_file.c_str() ) );
         store( boost::program_options::parse_config_file<wchar_t>( strm, *m_desc, true ), m_vm );
         notify( m_vm );
         m_signal( m_vm );
