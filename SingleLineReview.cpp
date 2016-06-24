@@ -2,7 +2,7 @@
 #include "SingleLineReview.h"
 
 
-SingleLineReview::SingleLineReview( const std::string& file_name, const boost::program_options::variables_map& vm )
+SingleLineReview::SingleLineReview( const std::wstring& file_name, const boost::program_options::variables_map& vm )
     : m_file_name( file_name ),
       m_variable_map( vm ),
       m_is_reviewing( false )
@@ -10,32 +10,32 @@ SingleLineReview::SingleLineReview( const std::string& file_name, const boost::p
     m_collect_interval = vm["collect-interval"].as<size_t>();
     m_minimal_review_time = vm["minimal-review-time"].as<size_t>();
 
-    m_review_name   = boost::filesystem::change_extension( m_file_name, ".review" ).string();
-    m_history_name  = boost::filesystem::change_extension( m_file_name, ".history" ).string();
+    m_review_name   = boost::filesystem::change_extension( m_file_name, L".review" ).wstring();
+    m_history_name  = boost::filesystem::change_extension( m_file_name, L".history" ).wstring();
 
-    m_log_debug.add_attribute( "Level", boost::log::attributes::constant<std::string>( "DEBUG" ) );
-    m_log_trace.add_attribute( "Level", boost::log::attributes::constant<std::string>( "TRACE" ) );
-    m_log_test.add_attribute( "Level", boost::log::attributes::constant<std::string>( "TEST" ) );
+    m_log_debug.add_attribute( "Level", boost::log::attributes::constant<std::wstring>( L"DEBUG" ) );
+    m_log_trace.add_attribute( "Level", boost::log::attributes::constant<std::wstring>( L"TRACE" ) );
+    m_log_test.add_attribute( "Level", boost::log::attributes::constant<std::wstring>( L"TEST" ) );
 
     {
-        std::stringstream strm;
+        std::wstringstream strm;
         boost::chrono::seconds s;
-        std::vector<std::string> string_list;
+        std::vector<std::wstring> string_list;
 
         if ( vm.count( "review-time-span-list" ) )
         {
-            string_list = vm["review-time-span-list"].as< std::vector<std::string> >();
+            string_list = vm["review-time-span-list"].as< std::vector<std::wstring> >();
         }
         else
         {
-            const char* s[] =
+            const wchar_t* s[] =
             {
-                "0 seconds",
-                "7 minutes",    "30 minutes",   "30 minutes",   "30 minutes",   "1 hours",      "1 hours",      "1 hours",
-                "1 hours",      "2 hours",      "3 hours",      "4 hours",      "5 hours",      "6 hours",      "7 hours",
-                "8 hours",      "9 hours",      "10 hours",     "11 hours",     "12 hours",     "13 hours",     "14 hours",
-                "24 hours",     "48 hours",     "72 hours",     "96 hours",     "120 hours",    "144 hours",    "168 hours",
-                "192 hours",    "216 hours",    "240 hours",    "264 hours",    "288 hours",    "312 hours",    "336 hours"
+                L"0 seconds",
+                L"7 minutes",    L"30 minutes",   L"30 minutes",   L"30 minutes",   L"1 hours",      L"1 hours",      L"1 hours",
+                L"1 hours",      L"2 hours",      L"3 hours",      L"4 hours",      L"5 hours",      L"6 hours",      L"7 hours",
+                L"8 hours",      L"9 hours",      L"10 hours",     L"11 hours",     L"12 hours",     L"13 hours",     L"14 hours",
+                L"24 hours",     L"48 hours",     L"72 hours",     L"96 hours",     L"120 hours",    L"144 hours",    L"168 hours",
+                L"192 hours",    L"216 hours",    L"240 hours",    L"264 hours",    L"288 hours",    L"312 hours",    L"336 hours"
             };
 
             string_list.assign( s, s + sizeof(s) / sizeof(char*) );
@@ -50,8 +50,13 @@ SingleLineReview::SingleLineReview( const std::string& file_name, const boost::p
         }
 
         strm.clear();
-        strm.str("");
-        std::copy( string_list.begin(), string_list.end(), std::ostream_iterator<std::string>( strm, ", " ) );
+        strm.str(L"");
+
+        //std::copy( string_list.begin(), string_list.end(), std::ostream_iterator<std::wstring>( strm, L", " ) );
+        for ( size_t i = 0; i < string_list.size(); ++i )
+        {
+            strm << string_list[i] << L", ";
+        }
         BOOST_LOG(m_log_trace) << __FUNCTION__ << " - review-time-span(" << string_list.size() << "): " << strm.str();
     }
 
@@ -69,11 +74,11 @@ void SingleLineReview::review()
         reload_strings();
         synchronize_history();
         collect_reviewing_strings();
-        wait_for_input( "\t***** " + boost::lexical_cast<std::string>(m_reviewing_strings.size() ) + " *****\n" );
+        wait_for_input( "\t***** " + boost::lexical_cast<std::wstring>(m_reviewing_strings.size() ) + " *****\n" );
 
         if ( ! m_reviewing_strings.empty() )
         {
-            std::string c;
+            std::wstring c;
             boost::timer::cpu_timer t;
 
             {
@@ -156,7 +161,7 @@ void SingleLineReview::on_review_begin()
     ReviewOrder order( *this );
     // std::random_shuffle( m_reviewing_strings.begin(), m_reviewing_strings.end(), random_gen );
     std::sort( m_reviewing_strings.begin(), m_reviewing_strings.end(), order );
-    system( ( "TITLE " + m_file_name + " - " + boost::lexical_cast<std::string>( m_reviewing_strings.size() ) ).c_str() );
+    system( ( "TITLE " + m_file_name + " - " + boost::lexical_cast<std::wstring>( m_reviewing_strings.size() ) ).c_str() );
 }
 
 
@@ -224,7 +229,7 @@ void SingleLineReview::reload_strings( hash_functor hasher )
 
     string_hash_list strings;
 
-    for ( std::string s; std::getline( is, s ); )
+    for ( std::wstring s; std::getline( is, s ); )
     {
         boost::trim(s);
 
@@ -308,7 +313,7 @@ void SingleLineReview::collect_reviewing_strings_thread()
 
             if ( ! m_reviewing_strings.empty() )
             {
-                system( ( "TITLE " + m_file_name + " - " + boost::lexical_cast<std::string>( m_reviewing_strings.size() ) ).c_str() ); 
+                system( ( "TITLE " + m_file_name + " - " + boost::lexical_cast<std::wstring>( m_reviewing_strings.size() ) ).c_str() ); 
             }
         }
     }
@@ -332,14 +337,14 @@ void SingleLineReview::write_review_time( const string_hash_pair& s )
 }
 
 
-std::string SingleLineReview::wait_for_input( const std::string& message )
+std::wstring SingleLineReview::wait_for_input( const std::wstring& message )
 {
     if ( ! message.empty() )
     {
         std::cout << message << std::flush;
     }
 
-    std::string input;
+    std::wstring input;
     std::getline( std::cin, input );
     system( "CLS" );
     boost::trim(input);
@@ -394,31 +399,31 @@ void SingleLineReview::synchronize_history()
 }
 
 
-std::string SingleLineReview::display_reviewing_string( const string_hash_list& strings, size_t index )
+std::wstring SingleLineReview::display_reviewing_string( const string_hash_list& strings, size_t index )
 {
     std::stringstream strm;
     strm << "TITLE " << m_file_name << " " << index + 1 << " / " << strings.size();
     system( strm.str().c_str() );
 
-    const std::string& s = strings[index].first;
+    const std::wstring& s = strings[index].first;
 
     if ( boost::starts_with( s, "[Q]" ) || boost::starts_with( s, "[q]" ) )
     {
         size_t pos = s.find( "[A]" );
 
-        if ( pos == std::string::npos )
+        if ( pos == std::wstring::npos )
         {
             pos = s.find( "[a]" );
 
-            if ( pos == std::string::npos )
+            if ( pos == std::wstring::npos )
             {
                 BOOST_LOG(m_log) << __FUNCTION__ << " - bad format: " << s;
                 return "";
             }
         }
 
-        std::string question = s.substr( 4, pos - 4 );
-        std::string answer = s.substr( pos + 4 );
+        std::wstring question = s.substr( 4, pos - 4 );
+        std::wstring answer = s.substr( pos + 4 );
         boost::trim(question);
         boost::trim(answer);
 
@@ -426,7 +431,7 @@ std::string SingleLineReview::display_reviewing_string( const string_hash_list& 
         {
             std::cout << "\t" << question << std::flush;
 
-            std::string command;
+            std::wstring command;
             std::getline( std::cin, command );
             if ( ! command.empty() )
             {
@@ -445,7 +450,7 @@ std::string SingleLineReview::display_reviewing_string( const string_hash_list& 
 }
 
 
-std::string SingleLineReview::time_string( std::time_t t, const char* format )
+std::wstring SingleLineReview::time_string( std::time_t t, const char* format )
 {
     std::tm* m = std::localtime( &t );
     char s[100] = { 0 };
@@ -454,7 +459,7 @@ std::string SingleLineReview::time_string( std::time_t t, const char* format )
 }
 
 
-std::string SingleLineReview::time_duration_string( std::time_t t )
+std::wstring SingleLineReview::time_duration_string( std::time_t t )
 {
     std::stringstream strm;
     std::time_t mon = 0, d = 0, h = 0, min = 0;
@@ -497,7 +502,7 @@ bool SingleLineReview::write_history()
 }
 
 
-history_type SingleLineReview::load_history_from_file( const std::string& file_name )
+history_type SingleLineReview::load_history_from_file( const std::wstring& file_name )
 {
     history_type history;
 
@@ -517,7 +522,7 @@ history_type SingleLineReview::load_history_from_file( const std::string& file_n
     std::time_t time = 0;
     std::stringstream strm;
 
-    for ( std::string s; std::getline( is, s ); )
+    for ( std::wstring s; std::getline( is, s ); )
     {
         if ( ! s.empty() )
         {
@@ -588,7 +593,7 @@ std::ostream& SingleLineReview::output_history( std::ostream& os, const history_
 }
 
 
-std::string SingleLineReview::get_history_string( const history_type& history )
+std::wstring SingleLineReview::get_history_string( const history_type& history )
 {
     std::stringstream strm;
     output_history( strm, history );
@@ -613,7 +618,7 @@ std::ostream& SingleLineReview::output_time_list( std::ostream& os, const time_l
     return os;
 }
 
-std::string SingleLineReview::get_time_list_string( const time_list& times )
+std::wstring SingleLineReview::get_time_list_string( const time_list& times )
 {
     std::stringstream strm;
     output_time_list( strm, times );
@@ -621,9 +626,9 @@ std::string SingleLineReview::get_time_list_string( const time_list& times )
 }
 
 
-size_t SingleLineReview::string_hash( const std::string& str )
+size_t SingleLineReview::string_hash( const std::wstring& str )
 {
-    std::string s = str;
+    std::wstring s = str;
     const char* chinese_chars[] =
     {
         "¡¡", "£¬", "¡£", "¡¢", "£¿", "£¡", "£»", "£º", "¡¤", "£®", "¡°", "¡±", "¡®", "¡¯",
@@ -638,7 +643,7 @@ size_t SingleLineReview::string_hash( const std::string& str )
 
     s.erase( std::remove_if( s.begin(), s.end(), boost::is_any_of( " \t\"\',.?:;!-/#()|<>{}[]~`@$%^&*+" ) ), s.end() );
     boost::to_lower(s);
-    static boost::hash<std::string> string_hasher;
+    static boost::hash<std::wstring> string_hasher;
     return string_hasher(s);
 }
 
@@ -652,7 +657,7 @@ void SingleLineReview::update_hash_algorighom( hash_functor old_hasher, hash_fun
 
     for ( size_t i = 0; i < m_strings.size(); ++i )
     {
-        std::string s = m_strings[i].first;
+        std::wstring s = m_strings[i].first;
         size_t hash = m_strings[i].second;
         time_list& times = m_history[hash];
 

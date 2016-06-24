@@ -30,9 +30,9 @@ void ConsoleCommand::update_option( const boost::program_options::variables_map&
 {
     static OptionUpdateHelper option_helper;
 
-    if ( option_helper.update_one_option<std::string>( system_font_face_name, vm ) )
+    if ( option_helper.update_one_option<std::wstring>( system_font_face_name, vm ) )
     {
-        std::string font_face_name = option_helper.get_value<std::string>( system_font_face_name );
+        std::wstring font_face_name = option_helper.get_value<std::wstring>( system_font_face_name );
         set_font_face_name( font_face_name );
         LOG_DEBUG << "font-face-name: " << font_face_name;
     }
@@ -58,11 +58,11 @@ void ConsoleCommand::update_option( const boost::program_options::variables_map&
         LOG_DEBUG << "console-height: " << height;
     }
 
-    if ( option_helper.update_one_option<std::string>( system_console_color, vm ) )
+    if ( option_helper.update_one_option<std::wstring>( system_console_color, vm ) )
     {
-        std::string color_str = option_helper.get_value<std::string>( system_console_color );
+        std::wstring color_str = option_helper.get_value<std::wstring>( system_console_color );
         WORD color = 0;
-        std::stringstream strm;
+        std::wstringstream strm;
         strm << color_str;
         strm >> std::hex >> color;
 
@@ -78,36 +78,23 @@ void ConsoleCommand::update_option( const boost::program_options::variables_map&
 }
 
 
-void ConsoleCommand::set_font_face_name( const std::string& name )
+void ConsoleCommand::set_font_face_name( const std::wstring& name )
 {
-    std::wstring face_name = L"新宋体";
-
-    if ( name == "Consolas" )
-    {
-        face_name = L"Consolas";
-    }
-    else if ( name == "Lucida Console" )
-    {
-        face_name = L"Lucida Console";
-    }
-    else if ( name == "新宋体" )
-    {
-        face_name = L"新宋体";
-    }
-    else
+    if ( name !=  L"新宋体" && name != L"Consolas" && name != L"Lucida Console"  )
     {
         LOG_ERROR << "wrong font-face-name: " << name;
+        return;
     }
 
     HANDLE m_handle = GetStdHandle( STD_OUTPUT_HANDLE );
     CONSOLE_FONT_INFOEX f;
     f.cbSize = sizeof( CONSOLE_FONT_INFOEX );
     GetCurrentConsoleFontEx( m_handle, FALSE, &f );
-    if ( f.FaceName != face_name )
+    if ( f.FaceName != name )
     {
         //SetConsoleOutputCP( face_name == L"新宋体" ? 936 : CP_UTF8 );
-        SetConsoleOutputCP( face_name == L"新宋体" ? 936 : 936 );
-        wcscpy_s( f.FaceName, face_name.c_str() );
+        SetConsoleOutputCP( name == L"新宋体" ? 936 : 936 );
+        wcscpy_s( f.FaceName, name.c_str() );
         SetCurrentConsoleFontEx( m_handle, FALSE, &f );
     }
 }

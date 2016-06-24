@@ -196,6 +196,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FileUtility.h"
+				>
+			</File>
+			<File
 				RelativePath=".\History.h"
 				>
 			</File>
@@ -288,7 +292,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\FileUtility.h"
+				RelativePath=".\SoundUtility.cpp"
 				>
 			</File>
 			<File
@@ -313,7 +317,19 @@
 			</File>
 		</Filter>
 		<File
+			RelativePath=".\ConsoleCommand.cpp"
+			>
+		</File>
+		<File
 			RelativePath=".\DirectoryWatcher.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\History.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Loader.cpp"
 			>
 		</File>
 		<File
@@ -330,6 +346,18 @@
 		</File>
 		<File
 			RelativePath=".\review.cfg"
+			>
+		</File>
+		<File
+			RelativePath=".\ReviewManager.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\ReviewString.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Speech.cpp"
 			>
 		</File>
 	</Files>

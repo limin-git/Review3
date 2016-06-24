@@ -13,7 +13,7 @@ class SingleLineReview
 
 public:
 
-    SingleLineReview( const std::string& file_name, const boost::program_options::variables_map& vm = boost::program_options::variables_map() );
+    SingleLineReview( const std::wstring& file_name, const boost::program_options::variables_map& vm = boost::program_options::variables_map() );
 
 public:
 
@@ -53,10 +53,10 @@ public:
 
     boost::mutex m_mutex;
     history_type m_history;
-    std::string m_file_name;
-    std::string m_review_name;
-    std::string m_history_name;
-    std::ofstream m_review_strm;
+    std::wstring m_file_name;
+    std::wstring m_review_name;
+    std::wstring m_history_name;
+    std::wofstream m_review_strm;
     size_t m_minimal_review_time;
     size_t m_collect_interval;
     volatile bool m_is_reviewing;

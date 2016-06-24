@@ -19,7 +19,7 @@ public:
 
                 if ( new_value != old_value )
                 {
-                     m_variables[option_name] = new_value;
+                    m_variables[option_name] = new_value;
                     return true;
                 }
             }

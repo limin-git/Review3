@@ -6,7 +6,7 @@
 namespace Utility
 {
 
-    void play_sound( const std::string& file  )
+    void play_sound( const std::wstring& file  )
     {
         try
         {
@@ -18,7 +18,7 @@ namespace Utility
             graph->QueryInterface( IID_IMediaControl, (void **)&control );
             graph->QueryInterface( IID_IMediaEvent, (void **)&evnt );
 
-            HRESULT hr = graph->RenderFile( boost::locale::conv::utf_to_utf<wchar_t>(file).c_str(), NULL );
+            HRESULT hr = graph->RenderFile( file.c_str(), NULL );
 
             if ( SUCCEEDED(hr) )
             {
@@ -42,7 +42,7 @@ namespace Utility
     }
 
 
-    void play_sound_list( const std::vector<std::string>& files )
+    void play_sound_list( const std::vector<std::wstring>& files )
     {
         for ( size_t i = 0; i < files.size(); ++i )
         {
@@ -51,22 +51,22 @@ namespace Utility
     }
 
 
-    void play_sound_list_thread( const std::vector<std::string>& files )
+    void play_sound_list_thread( const std::vector<std::wstring>& files )
     {
-        static QueueProcessor<> player( ( boost::function<void (const std::vector<std::string>&)>( &play_sound_list ) ) );
+        static QueueProcessor<> player( ( boost::function<void (const std::vector<std::wstring>&)>( &play_sound_list ) ) );
         player.queue_items( files );
     }
 
 
-    void text_to_speech( const std::string& word )
+    void text_to_speech( const std::wstring& word )
     {
-        std::vector<std::string> words;
+        std::vector<std::wstring> words;
         words.push_back( word );
         text_to_speech_list( words );
     }
 
 
-    void text_to_speech_list( const std::vector<std::string>& words )
+    void text_to_speech_list( const std::vector<std::wstring>& words )
     {
         static ISpVoice* sp_voice = NULL;
 
@@ -78,8 +78,7 @@ namespace Utility
         for ( size_t i = 0; i < words.size(); ++i )
         {
             // std::wstring ws = boost::locale::conv::utf_to_utf<wchar_t>( words[i], "" );
-            std::wstring ws = boost::locale::conv::to_utf<wchar_t>( words[i], "GBK" );
-            sp_voice->Speak( ws.c_str(), 0, NULL );
+            sp_voice->Speak( words[i].c_str(), 0, NULL );
             //LOG_TRACE << words[i];
 
             if ( i + 1 < words.size() )
@@ -90,14 +89,14 @@ namespace Utility
     }
 
 
-    void text_to_speech_list_thread( const std::vector<std::string>& words )
+    void text_to_speech_list_thread( const std::vector<std::wstring>& words )
     {
-        static QueueProcessor<> speaker( ( boost::function<void (const std::vector<std::string>&)>( &text_to_speech_list ) ) );
+        static QueueProcessor<> speaker( ( boost::function<void (const std::vector<std::wstring>&)>( &text_to_speech_list ) ) );
         speaker.queue_items( words );
     }
 
 
-    void play_or_tts( const std::pair<std::string, std::string>& word_path )
+    void play_or_tts( const std::pair<std::wstring, std::wstring>& word_path )
     {
         if ( ! word_path.second.empty() )
         {
@@ -110,7 +109,7 @@ namespace Utility
     }
 
 
-    void play_or_tts_list( const std::vector< std::pair<std::string, std::string> >& word_path_list )
+    void play_or_tts_list( const std::vector< std::pair<std::wstring, std::wstring> >& word_path_list )
     {
         for ( size_t i = 0; i < word_path_list.size(); ++i )
         {
@@ -118,31 +117,31 @@ namespace Utility
         }
     }
 
-    void play_or_tts_list_thread( const std::vector< std::pair<std::string, std::string> >& word_path_list )
+    void play_or_tts_list_thread( const std::vector< std::pair<std::wstring, std::wstring> >& word_path_list )
     {
-        static QueueProcessor< std::pair<std::string, std::string> > play_tts( ( boost::function<void (const std::vector< std::pair<std::string, std::string> >&)>( &play_or_tts_list ) ) );
+        static QueueProcessor< std::pair<std::wstring, std::wstring> > play_tts( ( boost::function<void (const std::vector< std::pair<std::wstring, std::wstring> >&)>( &play_or_tts_list ) ) );
         play_tts.queue_items( word_path_list );
     }
 
 
-    RecordSound::RecordSound( const std::string& n )
+    RecordSound::RecordSound( const std::wstring& n )
         : m_file_name( n )
     {
-        ::mciSendString( "set wave samplespersec 11025", "", 0, 0 );
-        ::mciSendString( "set wave channels 2", "", 0, 0 );
-        ::mciSendString( "close my_wav_sound", 0, 0, 0 );
-        ::mciSendString( "open new type WAVEAudio alias my_wav_sound", 0, 0, 0 );
-        ::mciSendString( "record my_wav_sound", 0, 0, 0 );
+        ::mciSendString( L"set wave samplespersec 11025", L"", 0, 0 );
+        ::mciSendString( L"set wave channels 2", L"", 0, 0 );
+        ::mciSendString( L"close my_wav_sound", 0, 0, 0 );
+        ::mciSendString( L"open new type WAVEAudio alias my_wav_sound", 0, 0, 0 );
+        ::mciSendString( L"record my_wav_sound", 0, 0, 0 );
         //LOG_DEBUG << "recording bein" << m_file_name;
     }
 
 
     RecordSound::~RecordSound()
     {
-        std::string s = "save my_wav_sound " + m_file_name;
-        ::mciSendString( "stop my_wav_sound", 0, 0, 0 );
+        std::wstring s = L"save my_wav_sound " + m_file_name;
+        ::mciSendString( L"stop my_wav_sound", 0, 0, 0 );
         ::mciSendString( s.c_str(), 0, 0, 0 );
-        ::mciSendString( "close my_wav_sound", 0, 0, 0 );
+        ::mciSendString( L"close my_wav_sound", 0, 0, 0 );
         //LOG_DEBUG << "recording end" << m_file_name;
     }
 

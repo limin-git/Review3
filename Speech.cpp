@@ -16,9 +16,9 @@ Speech::Speech()
 }
 
 
-void Speech::play( const std::vector<std::string>& words )
+void Speech::play( const std::vector<std::wstring>& words )
 {
-    std::vector< std::pair<std::string, std::string> > word_paths = get_word_speech_file_path( words );
+    std::vector< std::pair<std::wstring, std::wstring> > word_paths = get_word_speech_file_path( words );
 
     if ( ! word_paths.empty() )
     {
@@ -27,11 +27,11 @@ void Speech::play( const std::vector<std::string>& words )
 }
 
 
-std::vector<std::string> Speech::get_files( const std::vector<std::string>& words, std::vector<std::string>& speak_words )
+std::vector<std::wstring> Speech::get_files( const std::vector<std::wstring>& words, std::vector<std::wstring>& speak_words )
 {
     boost::unique_lock<boost::mutex> lock( m_mutex );
 
-    std::vector<std::string> files;
+    std::vector<std::wstring> files;
     std::vector<bool> word_found( words.size() );
     for ( size_t i = 0; i < word_found.size(); ++i ) { word_found[i] = false; }
 
@@ -44,14 +44,14 @@ std::vector<std::string> Speech::get_files( const std::vector<std::string>& word
                 continue;
             }
 
-            std::string first_char = words[j].substr( 0, 1 );
+            std::wstring first_char = words[j].substr( 0, 1 );
             boost::filesystem::path path = m_paths[i].first / first_char / ( words[j] + m_paths[i].second );
 
             if ( boost::filesystem::exists( path ) )
             {
-                files.push_back( path.string() );
+                files.push_back( path.wstring() );
                 word_found[j] = true;
-                LOG_TRACE << path.string();
+                LOG_TRACE << path.wstring();
             }
         }
     }
@@ -68,19 +68,19 @@ std::vector<std::string> Speech::get_files( const std::vector<std::string>& word
 }
 
 
-std::vector< std::pair<std::string, std::string> > Speech::get_word_speech_file_path( const std::vector<std::string>& words )
+std::vector< std::pair<std::wstring, std::wstring> > Speech::get_word_speech_file_path( const std::vector<std::wstring>& words )
 {
     boost::unique_lock<boost::mutex> lock( m_mutex );
 
-    std::vector< std::pair<std::string, std::string> > paths;
+    std::vector< std::pair<std::wstring, std::wstring> > paths;
 
     if ( m_no_duplicate )
     {
         for ( size_t i = 0; i < words.size(); ++i )
         {
-            const std::string& word = words[i];
-            std::string word_path;
-            std::string first_char = words[i].substr( 0, 1 );
+            const std::wstring& word = words[i];
+            std::wstring word_path;
+            std::wstring first_char = words[i].substr( 0, 1 );
 
             for ( size_t j = 0; j < m_paths.size(); ++j )
             {
@@ -88,13 +88,13 @@ std::vector< std::pair<std::string, std::string> > Speech::get_word_speech_file_
 
                 if ( boost::filesystem::exists( path ) )
                 {
-                    word_path = path.string();
+                    word_path = path.wstring();
                     LOG_TRACE << word_path;
                     break;
                 }
                 else
                 {
-                    LOG_TRACE << "can not find: " << path.string();
+                    LOG_TRACE << "can not find: " << path.wstring();
                 }
             }
 
@@ -110,19 +110,19 @@ std::vector< std::pair<std::string, std::string> > Speech::get_word_speech_file_
         {
             for ( size_t j = 0; j < words.size(); ++j )
             {
-                const std::string& word = words[j];
-                std::string first_char = word.substr( 0, 1 );
-                std::string word_path;
+                const std::wstring& word = words[j];
+                std::wstring first_char = word.substr( 0, 1 );
+                std::wstring word_path;
                 boost::filesystem::path path = m_paths[i].first / first_char / ( word + m_paths[i].second );
 
                 if ( boost::filesystem::exists( path ) )
                 {
-                    word_path = path.string();
+                    word_path = path.wstring();
                     LOG_TRACE << word_path;
                 }
                 else
                 {
-                    LOG_TRACE << "can not find: " << path.string();
+                    LOG_TRACE << "can not find: " << path.wstring();
                 }
 
                 if ( ! word_path.empty() || ! m_no_text_to_speech )
@@ -141,22 +141,22 @@ void Speech::update_option( const boost::program_options::variables_map& vm )
 {
     static OptionUpdateHelper option_helper;
 
-    if ( option_helper.update_one_option< std::vector<std::string> >( speech_path_option, vm ) )
+    if ( option_helper.update_one_option< std::vector<std::wstring> >( speech_path_option, vm ) )
     {
-        std::vector<std::string> vs = option_helper.get_value< std::vector<std::string> >( speech_path_option );
-        std::vector< std::pair<boost::filesystem::path, std::string> > paths;
+        std::vector<std::wstring> vs = option_helper.get_value< std::vector<std::wstring> >( speech_path_option );
+        std::vector< std::pair<boost::filesystem::path, std::wstring> > paths;
 
         for ( size_t i = 0; i < vs.size(); ++i )
         {
-            std::string path = vs[i];
-            std::string extension = ".mp3";
-            size_t pos = vs[i].find_first_of( "|?*" );
-            char seperator = ' ';
+            std::wstring path = vs[i];
+            std::wstring extension = L".mp3";
+            size_t pos = vs[i].find_first_of( L"|?*" );
+            wchar_t seperator = L' ';
 
-            if ( pos != std::string::npos )
+            if ( pos != std::wstring::npos )
             {
                 path = boost::trim_copy( vs[i].substr( 0, pos ) );
-                extension = boost::trim_copy( vs[i].substr( pos + 1, std::string::npos ) );
+                extension = boost::trim_copy( vs[i].substr( pos + 1, std::wstring::npos ) );
                 seperator = vs[i][pos];
             }
 
@@ -175,15 +175,15 @@ void Speech::update_option( const boost::program_options::variables_map& vm )
         m_paths = paths;
     }
 
-    if ( option_helper.update_one_option<std::string>( speech_no_duplicate, vm, "false" ) )
+    if ( option_helper.update_one_option<std::wstring>( speech_no_duplicate, vm, L"false" ) )
     {
-        m_no_duplicate = ( "true" == option_helper.get_value<std::string>( speech_no_duplicate ) );
+        m_no_duplicate = ( L"true" == option_helper.get_value<std::wstring>( speech_no_duplicate ) );
         LOG_DEBUG << "speech-no-duplicate: " << m_no_duplicate;
     }
 
-    if ( option_helper.update_one_option<std::string>( speech_no_text_to_speech, vm, "false" ) )
+    if ( option_helper.update_one_option<std::wstring>( speech_no_text_to_speech, vm, L"false" ) )
     {
-        m_no_text_to_speech = ( "true" == option_helper.get_value<std::string>( speech_no_text_to_speech ) );
+        m_no_text_to_speech = ( L"true" == option_helper.get_value<std::wstring>( speech_no_text_to_speech ) );
         LOG_DEBUG << "speech-no-text-to-speech: " << m_no_text_to_speech;
     }
 }

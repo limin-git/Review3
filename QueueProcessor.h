@@ -1,7 +1,7 @@
 #pragma once
 
 
-template< typename T = std::string, typename C = std::vector<T> >
+template< typename T = std::wstring, typename C = std::vector<T> >
 struct QueueProcessor
 {
     QueueProcessor( boost::function<void (const C&)> callback )
@@ -63,7 +63,7 @@ struct QueueProcessor
                     m_item_list_callback( items );
                 }
             }
-            catch ( std::exception& e )
+            catch ( std::exception& )
             {
                 //LOG << e.what();
             }

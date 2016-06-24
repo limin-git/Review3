@@ -56,7 +56,7 @@ ReviewManager::ReviewManager()
 
 ReviewManager::~ReviewManager()
 {
-    show_next_picture( "C:\\Windows\\Web\\Wallpaper\\Theme1\\img1.jpg" );
+    show_next_picture( L"C:\\Windows\\Web\\Wallpaper\\Theme1\\img1.jpg" );
     m_connection.disconnect();
 
     m_condition.notify_all();
@@ -70,7 +70,7 @@ ReviewManager::~ReviewManager()
 
 void ReviewManager::review()
 {
-    std::string action;
+    std::wstring action;
     boost::timer::cpu_timer t;
     ReviewString n;
 
@@ -92,39 +92,39 @@ void ReviewManager::review()
             t.start();
             action = n.review();
 
-            if ( action == "next" )
+            if ( action == L"next" )
             {
                 action = wait_user_interaction();
                 Utility::cls();
             }
 
-            while ( action == "back" )
+            while ( action == L"back" )
             {
                 Utility::cls();
                 n = get_previous();
                 m_current_reviewing = &n;
                 action = n.review();
 
-                if ( action == "next" )
+                if ( action == L"next" )
                 {
                     action = wait_user_interaction();
                     Utility::cls();
                 }
             }
 
-            if ( action == "quit" )
+            if ( action == L"quit" )
             {
                 m_running = false;
                 break;
             }
 
-            while ( action == "speech" )
+            while ( action == L"speech" )
             {
                 n.play_speech();
                 action = wait_user_interaction();
             }
 
-            if ( action == "listen" )
+            if ( action == L"listen" )
             {
                 m_is_listening = true;
                 boost::thread t( boost::bind( &ReviewManager::listen_thread, this ) );
@@ -132,12 +132,12 @@ void ReviewManager::review()
                 m_is_listening = false;
             }
 
-            if ( action == "delete" )
+            if ( action == L"delete" )
             {
                 m_history->disable( n.get_hash() );
             }
 
-            if ( action == "add-to-group" )
+            if ( action == L"add-to-group" )
             {
                 m_review_group.push_back( n );
             }
@@ -151,15 +151,15 @@ void ReviewManager::review()
                     m_play_back_string.pop_front();
                 }
 
-                std::vector<std::string> w;
+                std::vector<std::wstring> w;
 
                 for ( std::list<ReviewString>::iterator it = m_play_back_string.begin(); it != m_play_back_string.end(); ++it )
                 {
-                    std::vector<std::string> w2 = Utility::extract_strings_in_braces( it->get_string() );
+                    std::vector<std::wstring> w2 = Utility::extract_strings_in_braces( it->get_string() );
                     w.insert( w.end(), w2.begin(), w2.end() );
                 }
 
-                std::vector< std::pair<std::string, std::string> > word_paths = m_speech->get_word_speech_file_path( w );
+                std::vector< std::pair<std::wstring, std::wstring> > word_paths = m_speech->get_word_speech_file_path( w );
                 Utility::play_or_tts_list_thread( word_paths );
             }
 
@@ -263,7 +263,7 @@ ReviewString ReviewManager::get_previous()
 }
 
 
-std::string ReviewManager::wait_user_interaction()
+std::wstring ReviewManager::wait_user_interaction()
 {
     static HANDLE stdinput = GetStdHandle(STD_INPUT_HANDLE);
     static INPUT_RECORD input_buffer[128];
@@ -288,9 +288,9 @@ std::string ReviewManager::wait_user_interaction()
                         switch ( e.wVirtualKeyCode )
                         {
                         case VK_DELETE:         // Del
-                            return "delete";
+                            return L"delete";
                         case VK_ESCAPE:         // Esc
-                            return "quit";
+                            return L"quit";
                         case VK_LEFT:           // Left
                         case VK_UP:             // Up
                         case VK_PRIOR:          // PgUp
@@ -299,9 +299,9 @@ std::string ReviewManager::wait_user_interaction()
                         case VK_OEM_4:          // [{
                         case VK_OEM_1:          //;:
                         case VK_OEM_COMMA:      // ,<
-                            return "back";
+                            return L"back";
                         }
-                        return "next";
+                        return L"next";
                     }
                     break;
                 }
@@ -314,15 +314,15 @@ std::string ReviewManager::wait_user_interaction()
                         switch( e.dwButtonState )
                         {
                         case RIGHTMOST_BUTTON_PRESSED:
-                            return "back";
+                            return L"back";
                         case FROM_LEFT_1ST_BUTTON_PRESSED:
-                            return "next";
+                            return L"next";
                         }
                         break;
                     case DOUBLE_CLICK:
                     case MOUSE_HWHEELED:
                     case MOUSE_WHEELED:
-                        return "next";
+                        return L"next";
                     case MOUSE_MOVED:
                     default:
                         break;
@@ -333,18 +333,18 @@ std::string ReviewManager::wait_user_interaction()
         }
     }
 
-    return "next";
+    return L"next";
 }
 
 
 void ReviewManager::set_title()
 {
-    std::stringstream strm;
-    strm << m_file_name << " - ";
+    std::wstringstream strm;
+    strm << m_file_name << L" - ";
     
     if ( 0 == m_reviewing_set.size() && m_history->is_finished() )
     {
-        strm << "finished.";
+        strm << L"finished.";
     }
     else
     {
@@ -442,20 +442,20 @@ void ReviewManager::update_thread()
 }
 
 
-std::ostream& ReviewManager::output_hash_list( std::ostream& os, const std::list<size_t>& l )
+std::wostream& ReviewManager::output_hash_list( std::wostream& os, const std::list<size_t>& l )
 {
     for ( std::list<size_t>::const_iterator it = l.begin(); it != l.end(); ++it )
     {
         size_t hash = *it;
         std::time_t t = m_history->get_last_review_time( hash );
         size_t r = m_history->get_review_round( hash );
-        const std::string& s = m_loader->get_string( hash );
+        const std::wstring& s = m_loader->get_string( hash );
 
         os
-            << r << "\t"
-            << Utility::string_from_time_t( t ) << "\t"
-            << s.size() << "\t"
-            << s << "\n";
+            << r << L"\t"
+            << Utility::string_from_time_t( t ) << L"\t"
+            << s.size() << L"\t"
+            << s << L"\n";
             ;
     }
 
@@ -463,20 +463,20 @@ std::ostream& ReviewManager::output_hash_list( std::ostream& os, const std::list
 }
 
 
-std::string ReviewManager::get_hash_list_string( const std::list<size_t>& l )
+std::wstring ReviewManager::get_hash_list_string( const std::list<size_t>& l )
 {
-    std::stringstream strm;
+    std::wstringstream strm;
     output_hash_list( strm, l );
     return strm.str();
 }
 
 
-std::string ReviewManager::get_new_expired_string( const std::set<size_t>& os,  const std::set<size_t>& ns )
+std::wstring ReviewManager::get_new_expired_string( const std::set<size_t>& os,  const std::set<size_t>& ns )
 {
     std::set<size_t> added;
     std::set_difference( ns.begin(), ns.end(), os.begin(), os.end(), std::inserter( added, added.begin() ) );
 
-    std::stringstream strm;
+    std::wstringstream strm;
 
     for ( std::set<size_t>::iterator it = added.begin(); it != added.end(); ++it )
     {
@@ -484,8 +484,8 @@ std::string ReviewManager::get_new_expired_string( const std::set<size_t>& os,  
         size_t round = m_history->get_review_round( hash );
         std::time_t last_review = m_history->get_last_review_time( hash );
         std::time_t elapsed = std::time(0) - last_review;
-        const std::string& s = m_loader->get_string( *it );
-        strm << std::endl << "expired: " << round << " (" << Utility::duration_string_from_seconds(elapsed) << ") " << s;
+        const std::wstring& s = m_loader->get_string( *it );
+        strm << std::endl << L"expired: " << round << L" (" << Utility::duration_string_from_seconds(elapsed) << L") " << s;
     }
 
     return strm.str();
@@ -520,8 +520,8 @@ void ReviewManager::listen_thread()
     while ( m_is_listening && ! m_listening_list.empty() )
     {
         size_t hash = get_next_hash( m_listening_list, get_next_order( listen_orders, listen_orders_it ) );
-        const std::string& s = m_loader->get_string( hash );
-        std::vector<std::string> words = Utility::extract_strings_in_braces( s );
+        const std::wstring& s = m_loader->get_string( hash );
+        std::vector<std::wstring> words = Utility::extract_strings_in_braces( s );
 
         if ( words.empty() )
         {
@@ -533,7 +533,7 @@ void ReviewManager::listen_thread()
             break;
         }
 
-        std::vector< std::pair<std::string, std::string> > word_paths = m_speech->get_word_speech_file_path( words );
+        std::vector< std::pair<std::wstring, std::wstring> > word_paths = m_speech->get_word_speech_file_path( words );
 
         if ( word_paths.empty() )
         {
@@ -541,21 +541,28 @@ void ReviewManager::listen_thread()
         }
 
         Utility::cls();
-        std::stringstream strm;
-        strm << "TITLE listen - " << m_listening_list.size();
-        std::string title = strm.str();
-        SetConsoleTitleA( strm.str().c_str() );
-        //system( ( "TITLE listen - " + boost::lexical_cast<std::string>( m_listening_list.size() ) ).c_str() );
+        std::wstringstream strm;
+        strm << L"TITLE listen - " << m_listening_list.size();
+        SetConsoleTitle( strm.str().c_str() );
+        //system( ( "TITLE listen - " + boost::lexical_cast<std::wstring>( m_listening_list.size() ) ).c_str() );
 
         if ( ! m_listen_no_string )
         {
-            std::string ts = s;
+            std::wstring ts = s;
             ts.erase( std::remove_if( ts.begin(), ts.end(), boost::is_any_of( "{}" ) ), ts.end() );
-            std::cout << "\t" << ts << std::endl;
+            std::wcout << L"\t";
+            Utility::write_console( ts );
+            std::wcout << std::endl;
         }
 
-        std::cout << "\t";
-        std::copy( words.begin(), words.end(), std::ostream_iterator<std::string>( std::cout, "\n\t" ) );
+        std::wcout << L"\t";
+        //std::copy( words.begin(), words.end(), std::ostream_iterator<std::wstring>( std::wcout, L"\n\t" ) );
+        for ( size_t i = 0; i < words.size(); ++i )
+        {
+            Utility::write_console( words[i] );
+            std::wcout << L"\n\t";
+        }
+
         LOG_TRACE << s;
         Utility::play_or_tts_list( word_paths );
     }
@@ -597,18 +604,18 @@ void ReviewManager::update_option( const boost::program_options::variables_map& 
         }
     }
 
-    if ( option_helper.update_one_option<std::string>( review_order_option, vm, "latest" ) )
+    if ( option_helper.update_one_option<std::wstring>( review_order_option, vm, L"latest" ) )
     {
         boost::unique_lock<boost::mutex> lock( m_mutex );
-        std::string order_option_str = option_helper.get_value<std::string>( review_order_option );
+        std::wstring order_option_str = option_helper.get_value<std::wstring>( review_order_option );
         m_review_orders = convert_from_string( order_option_str );
         m_review_order_it = m_review_orders.begin();
         LOG_DEBUG << "review-order: " << order_option_str;
     }
 
-    if ( option_helper.update_one_option<std::string>( speech_disabled_option, vm, "false" ) )
+    if ( option_helper.update_one_option<std::wstring>( speech_disabled_option, vm, L"false" ) )
     {
-        bool speech_disabled = ( "true" == option_helper.get_value<std::string>( speech_disabled_option ) );
+        bool speech_disabled = ( L"true" == option_helper.get_value<std::wstring>( speech_disabled_option ) );
 
         if ( speech_disabled )
         {
@@ -624,27 +631,27 @@ void ReviewManager::update_option( const boost::program_options::variables_map& 
         }
     }
 
-    if ( option_helper.update_one_option<std::string>( listen_no_string_option, vm, "false" ) )
+    if ( option_helper.update_one_option<std::wstring>( listen_no_string_option, vm, L"false" ) )
     {
-        m_listen_no_string = ( "true" == option_helper.get_value<std::string>( listen_no_string_option ) );
+        m_listen_no_string = ( L"true" == option_helper.get_value<std::wstring>( listen_no_string_option ) );
         LOG_DEBUG << "listen-no-string: " << ( m_listen_no_string ? "true" : "false" );
     }
 
-    if ( option_helper.update_one_option<std::string>( listen_all_option, vm, "false" ) )
+    if ( option_helper.update_one_option<std::wstring>( listen_all_option, vm, L"false" ) )
     {
-        m_listen_all = ( "true" == option_helper.get_value<std::string>( listen_all_option ) );
+        m_listen_all = ( L"true" == option_helper.get_value<std::wstring>( listen_all_option ) );
         LOG_DEBUG << "listen-all: " << ( m_listen_all ? "true" : "false" );
     }
 
-    if ( option_helper.update_one_option<std::string>( file_name_option, vm ) )
+    if ( option_helper.update_one_option<std::wstring>( file_name_option, vm ) )
     {
-        m_file_name = option_helper.get_value<std::string>( file_name_option );
+        m_file_name = option_helper.get_value<std::wstring>( file_name_option );
         LOG_DEBUG << "file-name: " << m_file_name;
     }
 
-    if ( option_helper.update_one_option<std::string>( review_display_format_option, vm, "Q,AE" ) )
+    if ( option_helper.update_one_option<std::wstring>( review_display_format_option, vm, L"Q,AE" ) )
     {
-        m_display_format = option_helper.get_value<std::string>( review_display_format_option );
+        m_display_format = option_helper.get_value<std::wstring>( review_display_format_option );
         LOG_DEBUG << "review-display-format: " << m_display_format;
     }
 
@@ -654,9 +661,9 @@ void ReviewManager::update_option( const boost::program_options::variables_map& 
         LOG_DEBUG << "review-minimal-review-distance: " << m_minimal_review_distance;
     }
 
-    if ( option_helper.update_one_option<std::string>( system_picture_path, vm ) )
+    if ( option_helper.update_one_option<std::wstring>( system_picture_path, vm ) )
     {
-        m_picture_path = option_helper.get_value<std::string>( system_picture_path );
+        m_picture_path = option_helper.get_value<std::wstring>( system_picture_path );
         LOG_DEBUG << "system-picture-path: " << m_picture_path;
 
         if ( boost::filesystem::exists( m_picture_path ) )
@@ -742,19 +749,19 @@ ReviewManager::EReviewOrder ReviewManager::get_next_order( std::vector<EReviewOr
 }
 
 
-std::vector<ReviewManager::EReviewOrder> ReviewManager::convert_from_string( const std::string& order_string )
+std::vector<ReviewManager::EReviewOrder> ReviewManager::convert_from_string( const std::wstring& order_string )
 {
     std::vector<ReviewManager::EReviewOrder> orders;
-    std::vector<std::string> vos;
-    boost::split( vos, order_string, boost::is_any_of( ",:;-/\\%@|" ) );
+    std::vector<std::wstring> vos;
+    boost::split( vos, order_string, boost::is_any_of( L",:;-/\\%@|" ) );
 
     for ( size_t i = 0; i < vos.size(); ++i )
     {
         boost::to_lower(vos[i]);
-        if ( vos[i] == "latest" )       { orders.push_back( Latest ); }
-        else if ( vos[i] == "earlist" ) { orders.push_back( Earliest ); }
-        else if ( vos[i] == "random" )  { orders.push_back( Random ); }
-        else if ( vos[i] == "middle" )  { orders.push_back( Middle ); }
+        if ( vos[i] == L"latest" )       { orders.push_back( Latest ); }
+        else if ( vos[i] == L"earlist" ) { orders.push_back( Earliest ); }
+        else if ( vos[i] == L"random" )  { orders.push_back( Random ); }
+        else if ( vos[i] == L"middle" )  { orders.push_back( Middle ); }
         else
         {
             LOG << "invalid order: " << vos[i];
@@ -767,19 +774,19 @@ std::vector<ReviewManager::EReviewOrder> ReviewManager::convert_from_string( con
 
 void ReviewManager::upgrade_hash_algorithm()
 {
-    std::cout << "upgrading hash algorithm for " << m_loader->m_file_name << " ..." << std::flush;
+    //std::cout << "upgrading hash algorithm for " << m_loader->m_file_name << " ..." << std::flush;
 
     m_history->initialize();
 
     history_type& old_history = m_history->m_history;
-    boost::function<size_t (const std::string&)> new_hash_fun = &Loader::string_hash_new;
+    boost::function<size_t (const std::wstring&)> new_hash_fun = &Loader::string_hash_new;
     const std::set<size_t>& hash_set = m_loader->get_string_hash_set();
     history_type new_history;
 
     for ( std::set<size_t>::const_iterator it = hash_set.begin(); it != hash_set.end(); ++it )
     {
         size_t hash = *it;
-        const std::string& s = m_loader->get_string_no_lock( hash );
+        const std::wstring& s = m_loader->get_string_no_lock( hash );
 
         history_type::iterator find_it = old_history.find( hash );
 
@@ -805,7 +812,7 @@ void ReviewManager::upgrade_hash_algorithm()
 }
 
 
-void ReviewManager::show_next_picture( const std::string& path )
+void ReviewManager::show_next_picture( const std::wstring& path )
 {
     boost::filesystem::recursive_directory_iterator& it = m_picture_dir_it;
     boost::filesystem::recursive_directory_iterator end;
@@ -816,7 +823,7 @@ void ReviewManager::show_next_picture( const std::string& path )
         {
             if ( path.empty() )
             {
-                Utility::set_system_wallpaper( it->path().string() );
+                Utility::set_system_wallpaper( it->path().wstring() );
             }
             else
             {

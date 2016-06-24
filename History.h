@@ -31,7 +31,7 @@ public:
 
 public:
 
-    history_type load_history_from_file( const std::string& file );
+    history_type load_history_from_file( const std::wstring& file );
 
 public:
 
@@ -39,12 +39,12 @@ public:
 
 public:
 
-    std::string string_from_history( const history_type& history );
+    std::wstring string_from_history( const history_type& history );
 
 public:
 
-    std::string m_file_name;
-    std::string m_review_name;
+    std::wstring m_file_name;
+    std::wstring m_review_name;
     history_type m_history;
     std::ofstream m_review_stream;
     size_t m_max_cache_size;

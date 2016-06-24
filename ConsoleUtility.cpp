@@ -116,7 +116,7 @@ namespace Utility
 
     int WINAPI console_ctrl_handler( DWORD  ctrl_type )
     {
-        std::cout << static_cast<char>(7) << std::endl;
+        std::cout << static_cast<wchar_t>(7) << std::endl;
 
         switch ( ctrl_type )
         {
@@ -197,10 +197,9 @@ namespace Utility
     }
 
 
-    void write_console_on_center( const std::string& s, HANDLE output )
+    void write_console_on_center( const std::wstring& s, HANDLE output )
     {
-        std::wstring ws = to_wstring( s, CP_UTF8 );
-        std::string as = to_string( ws, 936 );
+        std::string as = to_string( s, 936 );
 
         DWORD written = 0;
         CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -215,7 +214,7 @@ namespace Utility
 
         size_t pos = ( window_width * window_height - as.size() ) / 2;
         COORD coord = { pos % window_width, pos / window_width };
-        WriteConsoleOutputCharacterW( output, ws.c_str(), ws.size(), coord, &written );
+        WriteConsoleOutputCharacter( output, s.c_str(), s.size(), coord, &written );
     }
 
 

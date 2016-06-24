@@ -11,7 +11,7 @@ public:
 
 public:
 
-    void set_font_face_name( const std::string& name );
+    void set_font_face_name( const std::wstring& name );
     void set_font_size( SHORT font_size );
     void set_console_width( SHORT width );
     void set_console_height( SHORT height );

@@ -8,10 +8,10 @@ class ReviewString
 {
 public:
 
-    ReviewString( size_t hash = 0, Loader* loader = NULL, History* history = NULL, Speech* play = NULL, const std::string& display_format = "" );
-    std::string review();
+    ReviewString( size_t hash = 0, Loader* loader = NULL, History* history = NULL, Speech* play = NULL, const std::wstring& display_format = L"" );
+    std::wstring review();
     void play_speech();
-    const std::string& get_string();
+    const std::wstring& get_string();
     size_t get_hash() { return m_hash; }
 
 public:
@@ -20,10 +20,10 @@ public:
     Loader* m_loader;
     History* m_history;
     Speech* m_speech;
-    std::string m_string;
-    std::string m_display_format;
-    std::vector<std::string> m_speech_words;
-    std::map<char, std::string> m_string_map;
+    std::wstring m_string;
+    std::wstring m_display_format;
+    std::vector<std::wstring> m_speech_words;
+    std::map<wchar_t, std::wstring> m_string_map;
 };
 
 typedef boost::shared_ptr<ReviewString> ReviewStringPtr;

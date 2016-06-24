@@ -15,16 +15,16 @@ History::History()
     const boost::program_options::variables_map& vm = ProgramOptions::get_vm();
 
     {
-        std::string schedule;
+        std::wstring schedule;
 
         if ( vm.count( review_schedule ) )
         {
-            schedule = vm[review_schedule].as<std::string>();
+            schedule = vm[review_schedule].as<std::wstring>();
         }
 
         if ( schedule.empty() )
         {
-            schedule = "0 hours, 24 hours, 48 hours, 72 hours, 96 hours, 120 hours, 144 hours, 168 hours";
+            schedule = L"0 hours, 24 hours, 48 hours, 72 hours, 96 hours, 120 hours, 144 hours, 168 hours";
             //"0 seconds",    "7 minutes",    "30 minutes",   "30 minutes",   "1 hours",      "3 hours",      "5 hours",
             //"7 hours",      "9 hours",      "11 hours",     "13 hours",     "15 hours",     "17 hours",     "19 hours",
             //"24 hours",     "48 hours",     "72 hours",     "96 hours",     "120 hours",    "144 hours",    "168 hours"
@@ -34,7 +34,7 @@ History::History()
             //"696 hours",    "720 hours",    "744 hours",    "768 hours",    "792 hours",    "816 hours",    "840 hours"
         }
 
-        std::vector<std::string> strings = Utility::split_string( schedule );
+        std::vector<std::wstring> strings = Utility::split_string( schedule );
         m_schedule = Utility::times_from_strings( strings );
         LOG_TRACE << "review.schedule(" << strings.size() << "): " << schedule;
     }
@@ -148,7 +148,7 @@ void History::write_history()
 }
 
 
-history_type History::load_history_from_file( const std::string& file )
+history_type History::load_history_from_file( const std::wstring& file )
 {
     history_type history;
 
@@ -412,19 +412,19 @@ void History::clean_review_cache()
 void History::update_option( const boost::program_options::variables_map& vm )
 {
     static OptionUpdateHelper option_helper;
-    static std::string name = vm[file_name_option].as<std::string>();
-    static std::string default_history_naame = boost::filesystem::change_extension( name, ".history" ).string();
-    static std::string default_review_naame = boost::filesystem::change_extension( name, ".review" ).string();
+    static std::wstring name = vm[file_name_option].as<std::wstring>();
+    static std::wstring default_history_naame = boost::filesystem::change_extension( name, L".history" ).wstring();
+    static std::wstring default_review_naame = boost::filesystem::change_extension( name, L".review" ).wstring();
 
-    if ( option_helper.update_one_option<std::string>( file_history_option, vm, default_history_naame ) )
+    if ( option_helper.update_one_option<std::wstring>( file_history_option, vm, default_history_naame ) )
     {
-        m_file_name = option_helper.get_value<std::string>( file_history_option );
+        m_file_name = option_helper.get_value<std::wstring>( file_history_option );
         LOG_DEBUG << "file-history-name: " << m_file_name;
     }
 
-    if ( option_helper.update_one_option<std::string>( file_review_option, vm, default_review_naame ) )
+    if ( option_helper.update_one_option<std::wstring>( file_review_option, vm, default_review_naame ) )
     {
-        m_review_name = option_helper.get_value<std::string>( file_review_option );
+        m_review_name = option_helper.get_value<std::wstring>( file_review_option );
         LOG_DEBUG << "file-review-name: " << m_review_name;
     }
 
@@ -443,9 +443,9 @@ void History::update_option( const boost::program_options::variables_map& vm )
 }
 
 
-std::string History::string_from_history( const history_type& history )
+std::wstring History::string_from_history( const history_type& history )
 {
-    std::stringstream os;
+    std::wstringstream os;
 
     for ( history_type::const_iterator it = history.begin(); it != history.end(); ++it )
     {
@@ -459,7 +459,7 @@ std::string History::string_from_history( const history_type& history )
             continue;
         }
 
-        os << " " << Utility::string_from_time_t( times[0] );
+        os << L" " << Utility::string_from_time_t( times[0] );
 
         if ( 1 < times.size() )
         {

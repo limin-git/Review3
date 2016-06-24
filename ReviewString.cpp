@@ -8,7 +8,7 @@
 #include "ReviewManager.h"
 
 
-ReviewString::ReviewString( size_t hash, Loader* loader, History* history, Speech* play, const std::string& display_format )
+ReviewString::ReviewString( size_t hash, Loader* loader, History* history, Speech* play, const std::wstring& display_format )
     : m_hash( hash ),
       m_loader( loader ),
       m_history( history ),
@@ -25,26 +25,26 @@ ReviewString::ReviewString( size_t hash, Loader* loader, History* history, Speec
         m_string = m_loader->get_string( m_hash );
         m_string.erase( std::remove_if( m_string.begin(), m_string.end(), boost::is_any_of( "{}" ) ), m_string.end() );
 
-        static boost::regex e ( "(?x) ( \\[ [a-zA-Z] \\] ) (.*?) (?= \\[ [a-zA-Z] \\] | \\z )" );
-        boost::sregex_iterator it( m_string.begin(), m_string.end(), e );
-        boost::sregex_iterator end;
+        static boost::wregex e ( L"(?x) ( \\[ [a-zA-Z] \\] ) (.*?) (?= \\[ [a-zA-Z] \\] | \\z )" );
+        boost::wsregex_iterator it( m_string.begin(), m_string.end(), e );
+        boost::wsregex_iterator end;
 
         for ( ; it != end; ++it )
         {
-            char ch = it->str(1)[1];
-            std::string content = boost::trim_copy( it->str(2) );
+            wchar_t ch = it->str(1)[1];
+            std::wstring content = boost::trim_copy( it->str(2) );
             m_string_map[ch] = content;
         }
     }
 }
 
 
-std::string ReviewString::review()
+std::wstring ReviewString::review()
 {
     if ( 0 == m_hash )
     {
-        std::cout << "empty." << std::flush;
-        return "next";
+        std::wcout << L"empty." << std::flush;
+        return L"next";
     }
 
     if ( m_speech )
@@ -62,17 +62,17 @@ std::string ReviewString::review()
         bool should_wait = false;
         bool should_new_line = false;
         bool is_first_part = true;
-        std::string first_content;
+        std::wstring first_content;
 
         for ( size_t i = 0; i < m_display_format.size(); ++i )
         {
-            char ch = m_display_format[i];
+            wchar_t ch = m_display_format[i];
 
             if ( ( ch == ',' ) && should_wait )
             {
-                std::string action = ReviewManager::wait_user_interaction();
+                std::wstring action = ReviewManager::wait_user_interaction();
 
-                if ( action != "next" )
+                if ( action != L"next" )
                 {
                     Utility::cls();
                     return action;
@@ -84,7 +84,7 @@ std::string ReviewString::review()
             }
             else
             {
-                const std::string& content = m_string_map[ch];
+                const std::wstring& content = m_string_map[ch];
 
                 if ( content.empty() )
                 {
@@ -128,12 +128,12 @@ std::string ReviewString::review()
     if ( m_history )
     {
         LOG_DEBUG
-            << WSTRING(m_string) << std::endl
+            << m_string << std::endl
             << "(round: " << m_history->get_review_round( m_hash ) << ") "
             << Utility::duration_string_from_time_list( m_history->get_times( m_hash ) );
     }
 
-    return "next";
+    return L"next";
 }
 
 
@@ -149,13 +149,13 @@ void ReviewString::play_speech()
 }
 
 
-const std::string& ReviewString::get_string()
+const std::wstring& ReviewString::get_string()
 {
     if ( m_loader )
     {
         return m_loader->get_string( m_hash );
     }
 
-    static std::string empty;
+    static std::wstring empty;
     return empty;
 }

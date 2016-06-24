@@ -23,7 +23,7 @@ public:
 
     ReviewString get_next();
     ReviewString get_previous();
-    static std::string wait_user_interaction();
+    static std::wstring wait_user_interaction();
     void set_title();
     void update();
     void update_thread();
@@ -31,23 +31,23 @@ public:
 
 public:
 
-    std::ostream& output_hash_list( std::ostream& os, const std::list<size_t>& l );
-    std::string get_hash_list_string( const std::list<size_t>& l );
+    std::wostream& output_hash_list( std::wostream& os, const std::list<size_t>& l );
+    std::wstring get_hash_list_string( const std::list<size_t>& l );
 
 public:
 
-    std::string get_new_expired_string( const std::set<size_t>& os,  const std::set<size_t>& ns );
+    std::wstring get_new_expired_string( const std::set<size_t>& os,  const std::set<size_t>& ns );
 
 public:
 
     size_t get_next_hash( std::list<size_t>& hash_list, EReviewOrder order );
     EReviewOrder get_next_order( std::vector<EReviewOrder>& orders, std::vector<EReviewOrder>::iterator& it );
-    std::vector<EReviewOrder> convert_from_string( const std::string& order_string );
+    std::vector<EReviewOrder> convert_from_string( const std::wstring& order_string );
 
 public:
 
     void upgrade_hash_algorithm();
-    void show_next_picture( const std::string& path = "" );
+    void show_next_picture( const std::wstring& path = L"" );
 
 public:
 
@@ -58,9 +58,9 @@ public:
     volatile bool m_is_listening;
     boost::condition_variable m_condition;
     boost::mutex m_mutex;
-    std::string m_file_name;
-    std::string m_history_name;
-    std::string m_display_format;
+    std::wstring m_file_name;
+    std::wstring m_history_name;
+    std::wstring m_display_format;
     Loader* m_loader;
     History* m_history;
     Speech* m_speech;
@@ -84,6 +84,6 @@ public:
     boost::signals2::connection m_connection;
     boost::thread m_update_thread;
     bool m_running;
-    std::string m_picture_path;
+    std::wstring m_picture_path;
     boost::filesystem::recursive_directory_iterator m_picture_dir_it;
 };

@@ -5,20 +5,20 @@
 namespace Utility
 {
 
-    std::string string_from_time_t( std::time_t t, const char* format )
+    std::wstring string_from_time_t( std::time_t t, const wchar_t* format )
     {
         std::tm* m = std::localtime( &t );
-        char s[100] = { 0 };
-        std::strftime( s, 100, format, m );
+        wchar_t s[100] = { 0 };
+        std::wcsftime( s, 100, format, m );
         return s;
     }
 
 
-    std::string duration_string_from_seconds( std::time_t t )
+    std::wstring duration_string_from_seconds( std::time_t t )
     {
         enum { minute = 60, hour = 60 * minute ,day = 24 * hour, month = 30 * day };
 
-        std::stringstream strm;
+        std::wstringstream strm;
         std::time_t mon = 0, d = 0, h = 0, min = 0;
 
         #define CALCULATE( x, u, n ) if ( u <= x  ) { n = x / u; x %= u; }
@@ -28,23 +28,23 @@ namespace Utility
         CALCULATE( t, minute, min );
         #undef CALCULATE
 
-        #define WRAP_ZERO(x) (9 < x ? "" : "0") << x
-        if ( mon || d ) { strm << WRAP_ZERO(mon) << "/" << WRAP_ZERO(d) << "-"; }
-        strm << WRAP_ZERO(h) << ":" << WRAP_ZERO(min);
+        #define WRAP_ZERO(x) (9 < x ? L"" : L"0") << x
+        if ( mon || d ) { strm << WRAP_ZERO(mon) << L"/" << WRAP_ZERO(d) << L"-"; }
+        strm << WRAP_ZERO(h) << L":" << WRAP_ZERO(min);
         #undef WRAP_ZERO
 
         return strm.str();
     }
 
 
-    std::string duration_string_from_time_list( const std::vector<time_t>& times )
+    std::wstring duration_string_from_time_list( const std::vector<time_t>& times )
     {
         if ( times.empty() )
         {
-            return "";
+            return L"";
         }
 
-        std::stringstream strm;
+        std::wstringstream strm;
         strm << string_from_time_t( times[0] );
 
         for ( size_t i = 1; i < times.size(); ++i )
@@ -56,11 +56,11 @@ namespace Utility
     }
 
 
-    std::vector<time_t> times_from_strings( const std::vector<std::string>& strings )
+    std::vector<time_t> times_from_strings( const std::vector<std::wstring>& strings )
     {
         std::vector<time_t> times;
         boost::chrono::seconds s;
-        std::stringstream strm;
+        std::wstringstream strm;
 
         for ( size_t i = 0; i < strings.size(); ++i )
         {

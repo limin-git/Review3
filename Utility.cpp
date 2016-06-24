@@ -24,15 +24,15 @@ namespace Utility
     }
 
 
-    void set_system_wallpaper( const std::string& picture )
+    void set_system_wallpaper( const std::wstring& picture )
     {
-        SystemParametersInfoA(SPI_SETDESKWALLPAPER, 0, const_cast<char*>( picture.c_str() ), SPIF_UPDATEINIFILE);
+        SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, const_cast<wchar_t*>( picture.c_str() ), SPIF_UPDATEINIFILE);
     }
 
 
-    std::vector<std::string> get_files_of_directory( const std::string& dir )
+    std::vector<std::wstring> get_files_of_directory( const std::wstring& dir )
     {
-        std::vector<std::string> files;
+        std::vector<std::wstring> files;
         boost::filesystem::path dir_path( dir );
 
         if ( !exists( dir_path ) )
@@ -45,7 +45,7 @@ namespace Utility
         {
             if ( false != is_directory( it->status() ) )
             {
-                files.push_back( it->path().string() );
+                files.push_back( it->path().wstring() );
             }
         }
 
