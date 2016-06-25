@@ -241,6 +241,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SrtSubtitleParser.h"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -298,6 +302,10 @@
 			</File>
 			<File
 				RelativePath=".\SoundUtility.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SrtSubtitleParser.cpp"
 				>
 			</File>
 			<File
