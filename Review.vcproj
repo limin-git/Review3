@@ -280,6 +280,10 @@
 				RelativePath=".\Utility.h"
 				>
 			</File>
+			<File
+				RelativePath=".\WriteConsoleHelper.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Utility"

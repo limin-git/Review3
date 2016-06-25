@@ -52,4 +52,52 @@ namespace Utility
         return files;
     }
 
+
+    bool is_picture( const std::wstring& file_name )
+    {
+        std::ifstream is( file_name.c_str(), std::ios::in | std::ios::binary );
+
+        if ( !is )
+        {
+            return false;
+        }
+
+        unsigned char ch[2] = { 0 };
+
+        is.unsetf( std::ios::skipws );
+        is.read( (char*)ch, 2 );
+
+        if ( ch[0] == 0xFF && ch[1] == 0xD8 ) // JPEG
+        {
+            return true;
+        }
+        else if ( ch[0] == 0x4D && ch[1] == 0x42 ) // BMP
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool remove_file( const std::wstring& file_name )
+    {
+        boost::filesystem::path p( file_name );
+
+        if ( exists( p ) )
+        {
+            boost::system::error_code ec;
+            permissions(p, boost::filesystem::all_all);
+            remove( p, ec);
+
+            if ( ec )
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }

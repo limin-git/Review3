@@ -10,6 +10,9 @@
 #include "ProgramOptions.h"
 #include "OptionUpdateHelper.h"
 
+std::wstring g_current_wallpaper;
+ReviewManager* g_review_manager = NULL;
+
 
 struct Order
 {
@@ -51,11 +54,13 @@ ReviewManager::ReviewManager()
     m_history = new History;
     m_speech_impl = new Speech;
     m_connection = ProgramOptions::connect_to_signal( boost::bind( &ReviewManager::update_option, this, _1 ) );
+    g_review_manager = this;
 }
 
 
 ReviewManager::~ReviewManager()
 {
+    g_review_manager = NULL;
     show_next_picture( L"C:\\Windows\\Web\\Wallpaper\\Theme1\\img1.jpg" );
     m_connection.disconnect();
 
@@ -299,6 +304,12 @@ std::wstring ReviewManager::wait_user_interaction()
                         case VK_OEM_1:          //;:
                         case VK_OEM_COMMA:      // ,<
                             return L"back";
+                        case 'Z':
+                        case 'z':
+                            Utility::remove_file( g_current_wallpaper );
+                            g_review_manager->show_next_picture();
+                            Beep( 500, 200 );
+                            continue;
                         }
                         return L"next";
                     }
@@ -827,17 +838,10 @@ void ReviewManager::show_next_picture( const std::wstring& path )
 
     if ( it != end )
     {
-        if ( ! is_directory( it.status() )  )
+        if ( !path.empty() )
         {
-            if ( path.empty() )
-            {
-                Utility::set_system_wallpaper( it->path().wstring() );
-            }
-            else
-            {
-                Utility::set_system_wallpaper( path );
-                return;
-            }
+            Utility::set_system_wallpaper( path );
+            return;
         }
 
         size_t step = Utility::random_number( 1, 100 );
@@ -849,5 +853,24 @@ void ReviewManager::show_next_picture( const std::wstring& path )
                 it = boost::filesystem::recursive_directory_iterator( m_picture_path );
             }
         }
+
+        static int nest = 0;
+        if ( 10 < nest++ )
+        {
+            return;
+        }
+
+        if ( ! is_directory( it.status() )  )
+        {
+            if ( Utility::is_picture( it->path().wstring() ) )
+            {
+                Utility::set_system_wallpaper( it->path().wstring() );
+                g_current_wallpaper = it->path().wstring();
+                nest = 0;
+                return;
+            }
+        }
+
+        show_next_picture();
     }
 }
