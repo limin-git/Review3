@@ -844,7 +844,7 @@ void ReviewManager::show_next_picture( const std::wstring& path )
             return;
         }
 
-        size_t step = Utility::random_number( 1, 100 );
+        size_t step = Utility::random_number( 100, 500 );
 
         for ( size_t i = 0; i < step; ++i )
         {
