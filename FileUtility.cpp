@@ -49,6 +49,7 @@ namespace Utility
             size_t wsize = MultiByteToWideChar( code_page, 0, buf, size, 0, 0 );
             ws.resize( wsize );
             MultiByteToWideChar( code_page, 0, buf, size, &ws[0], wsize );
+            delete[] buf;
         }
 
         return ws;

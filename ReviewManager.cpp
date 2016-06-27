@@ -308,7 +308,8 @@ std::wstring ReviewManager::wait_user_interaction()
                         case 'z':
                             Utility::remove_file( g_current_wallpaper );
                             g_review_manager->show_next_picture();
-                            Beep( 500, 200 );
+                            Utility::play_sound( L"C:\\Windows\\Media\\Windows Background.wav" );
+                            //Beep( 500, 200 );
                             continue;
                         }
                         return L"next";
