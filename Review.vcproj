@@ -22,6 +22,7 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
+			DeleteExtensionsOnClean="*.obj;*.ilk;*.tlb;*.tli;*.tlh;*.tmp;*.rsp;*.pgc;*.pgd;*.meta;$(TargetPath)_for_fast_build"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -96,6 +97,7 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
+			DeleteExtensionsOnClean="*.obj;*.ilk;*.tlb;*.tli;*.tlh;*.tmp;*.rsp;*.pgc;*.pgd;*.meta;$(TargetPath)_for_fast_build"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -241,6 +243,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SrtSubtitleParser.h"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -298,6 +304,10 @@
 			</File>
 			<File
 				RelativePath=".\SoundUtility.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SrtSubtitleParser.cpp"
 				>
 			</File>
 			<File
