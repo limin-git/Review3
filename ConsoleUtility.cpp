@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ConsoleUtility.h"
 #include "UnicodeUtility.h"
+#include "WriteConsoleHelper.h"
 
 
 namespace Utility
@@ -121,19 +122,19 @@ namespace Utility
         switch ( ctrl_type )
         {
         case CTRL_C_EVENT:
-            std::cout << "Ctrl + C" << std::endl;
+            stdcout << "Ctrl + C" << "\n";
             break;
         case CTRL_BREAK_EVENT:
-            std::cout << "Ctrl + BREAK" << std::endl;
+            stdcout << "Ctrl + BREAK" << "\n";
             break;
         case CTRL_CLOSE_EVENT:
-            std::cout << "CLOSE EVENT" << std::endl;
+            stdcout << "CLOSE EVENT" << "\n";
             break;
         case CTRL_LOGOFF_EVENT:
-            std::cout << "LOGOFF EVENT" << std::endl;
+            stdcout << "LOGOFF EVENT" << "\n";
             break;
         case CTRL_SHUTDOWN_EVENT:
-            std::cout << "SHUTDOWN EVENT" << std::endl;
+            stdcout << "SHUTDOWN EVENT" << "\n";
             break;
         }
 

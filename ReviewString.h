@@ -20,7 +20,7 @@ public:
     Loader* m_loader;
     History* m_history;
     Speech* m_speech;
-    std::wstring m_string;
+    std::wstring m_wstring;
     std::wstring m_display_format;
     std::vector<std::wstring> m_speech_words;
     std::map<wchar_t, std::wstring> m_string_map;

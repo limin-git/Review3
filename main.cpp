@@ -66,7 +66,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
     if ( ::CreateMutex( NULL, FALSE, file_name.c_str() ) == NULL || GetLastError() == ERROR_ALREADY_EXISTS )
     {
-        std::cout << "another instance is running." << std::endl;
+        std::cout << "error: another instance is running." << std::endl;
         system( "pause" );
         return 0;
     }

@@ -6,6 +6,7 @@
 #include "Utility.h"
 #include "Log.h"
 #include "ReviewManager.h"
+#include "WriteConsoleHelper.h"
 
 
 ReviewString::ReviewString( size_t hash, Loader* loader, History* history, Speech* play, const std::wstring& display_format )
@@ -22,11 +23,11 @@ ReviewString::ReviewString( size_t hash, Loader* loader, History* history, Speec
 
     if ( m_hash && m_loader )
     {
-        m_string = m_loader->get_string( m_hash );
-        m_string.erase( std::remove_if( m_string.begin(), m_string.end(), boost::is_any_of( "{}" ) ), m_string.end() );
+        m_wstring = m_loader->get_string( m_hash );
+        m_wstring.erase( std::remove_if( m_wstring.begin(), m_wstring.end(), boost::is_any_of( "{}" ) ), m_wstring.end() );
 
         static boost::wregex e ( L"(?x) ( \\[ [a-zA-Z] \\] ) (.*?) (?= \\[ [a-zA-Z] \\] | \\z )" );
-        boost::wsregex_iterator it( m_string.begin(), m_string.end(), e );
+        boost::wsregex_iterator it( m_wstring.begin(), m_wstring.end(), e );
         boost::wsregex_iterator end;
 
         for ( ; it != end; ++it )
@@ -43,7 +44,7 @@ std::wstring ReviewString::review()
 {
     if ( 0 == m_hash )
     {
-        std::wcout << L"empty." << std::flush;
+        stdcout << "empty." << "\n";
         return L"next";
     }
 
@@ -54,8 +55,7 @@ std::wstring ReviewString::review()
 
     if ( m_string_map.empty() || m_display_format.empty() )
     {
-        std::cout << "\t";
-        Utility::write_console_on_center( m_string );
+        Utility::write_console_on_center( m_wstring );
     }
     else
     {
@@ -125,7 +125,7 @@ std::wstring ReviewString::review()
     if ( m_history )
     {
         LOG_DEBUG
-            << m_string << std::endl << "\t\t"
+            << m_wstring << std::endl << "\t\t"
             << "[Round: " << m_history->get_review_round( m_hash ) << "] "
             << Utility::duration_string_from_time_list( m_history->get_times( m_hash ) );
     }
