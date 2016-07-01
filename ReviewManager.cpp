@@ -181,7 +181,7 @@ ReviewString ReviewManager::get_next()
 {
     LOG_TRACE << "begin";
 
-    show_next_picture();
+    boost::thread( boost::bind( &ReviewManager::show_next_picture, this, L"" ) );
 
     boost::unique_lock<boost::mutex> lock( m_mutex );
 
@@ -306,9 +306,9 @@ std::wstring ReviewManager::wait_user_interaction()
                             return L"back";
                         case 'Z':
                         case 'z':
-                            Utility::remove_file( g_current_wallpaper );
-                            g_review_manager->show_next_picture();
-                            Utility::play_sound( L"C:\\Windows\\Media\\Windows Background.wav" );
+                            boost::thread( boost::bind( &Utility::remove_file, g_current_wallpaper ) );
+                            boost::thread( boost::bind( &ReviewManager::show_next_picture, g_review_manager, L"" ) );
+                            boost::thread( boost::bind ( &Utility::play_sound, L"C:\\Windows\\Media\\Windows Background.wav" ) );
                             //Beep( 500, 200 );
                             continue;
                         }
