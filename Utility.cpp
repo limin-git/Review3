@@ -100,4 +100,25 @@ namespace Utility
         return true;
     }
 
+
+    bool rename_file( const std::wstring& old_file_name, const std::wstring& new_file_name )
+    {
+        boost::filesystem::path op( old_file_name );
+        boost::filesystem::path np( new_file_name );
+
+        if ( exists( op ) && !exists( np ) )
+        {
+            boost::system::error_code ec;
+            permissions( op, boost::filesystem::all_all );
+            rename( op, np, ec);
+
+            if ( ec )
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }

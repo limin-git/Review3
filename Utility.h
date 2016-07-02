@@ -20,4 +20,5 @@ namespace Utility
     std::vector<std::wstring> get_files_of_directory( const std::wstring& dir );
     bool is_picture( const std::wstring& file_name );
     bool remove_file( const std::wstring& file_name );
+    bool rename_file( const std::wstring& old_file_name, const std::wstring& new_file_name );
 }

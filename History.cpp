@@ -331,7 +331,7 @@ bool History::is_expired( size_t hash, const std::time_t& current_time )
 
     if ( m_once_per_days )
     {
-        if ( current_time - last_review_time < m_once_per_days * 24 * 3600 )
+        if ( current_time - last_review_time < m_once_per_days )
         {
             return false;
         }

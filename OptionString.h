@@ -45,3 +45,4 @@
 #define system_console_height                   "system.console-height"
 #define system_console_color                    "system.console-color"
 #define system_picture_path                     "system.picture-path"
+#define system_picture_recycle_path             "system.picture-recycle-path"

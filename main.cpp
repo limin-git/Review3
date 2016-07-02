@@ -40,6 +40,7 @@ int _tmain(int argc, _TCHAR* argv[])
         ( system_console_height, op::value<SHORT>()->default_value( 5 ), "console height" )
         ( system_console_color, op::wvalue<std::wstring>(), "console color" )
         ( system_picture_path, op::wvalue<std::wstring>(), "desktop wallpaper path" )
+        ( system_picture_recycle_path, op::wvalue<std::wstring>(), "desktop wallpaper recycle path" )
         ;
 
     desc.add( Log::get_description() );

@@ -305,11 +305,11 @@ std::wstring ReviewManager::wait_user_interaction()
                         case VK_OEM_COMMA:      // ,<
                             return L"back";
                         case 'Z':
-                        case 'z':
-                            boost::thread( boost::bind( &Utility::remove_file, g_current_wallpaper ) );
+                            boost::filesystem::path old_path( g_current_wallpaper );
+                            boost::filesystem::path new_path = g_review_manager->m_picture_recycle_path / old_path.filename();
+                            boost::thread( boost::bind( &Utility::rename_file, old_path.wstring(), new_path.wstring() ) );
                             boost::thread( boost::bind( &ReviewManager::show_next_picture, g_review_manager, L"" ) );
                             boost::thread( boost::bind ( &Utility::play_sound, L"C:\\Windows\\Media\\Windows Background.wav" ) );
-                            //Beep( 500, 200 );
                             continue;
                         }
                         return L"next";
@@ -694,6 +694,12 @@ void ReviewManager::update_option( const boost::program_options::variables_map& 
         {
             m_picture_dir_it = boost::filesystem::recursive_directory_iterator();
         }
+    }
+
+    if ( option_helper.update_one_option<std::wstring>( system_picture_recycle_path, vm ) )
+    {
+        m_picture_recycle_path = option_helper.get_value<std::wstring>( system_picture_recycle_path );
+        LOG_DEBUG << "system-picture-recycle-path: " << m_picture_recycle_path;
     }
 }
 

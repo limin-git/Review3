@@ -85,5 +85,6 @@ public:
     boost::thread m_update_thread;
     bool m_running;
     std::wstring m_picture_path;
+    std::wstring m_picture_recycle_path;
     boost::filesystem::recursive_directory_iterator m_picture_dir_it;
 };
