@@ -8,6 +8,7 @@
 
 ConsoleCommand::ConsoleCommand()
 {
+    m_hwnd = GetConsoleWindow();
     cin = GetStdHandle( STD_INPUT_HANDLE );
     cout = CreateConsoleScreenBuffer( GENERIC_READ | GENERIC_WRITE, 0, 0, CONSOLE_TEXTMODE_BUFFER, 0 );
     SetStdHandle( STD_OUTPUT_HANDLE, cout );
@@ -199,6 +200,14 @@ void ConsoleCommand::show_console_cursor( BOOL visible )
 
 
 void ConsoleCommand::disable_console_system_buttons()
+{
+    LONG style = GetWindowLong( m_hwnd, GWL_STYLE );
+    style &= ~(WS_SYSMENU|WS_SIZEBOX); // no menu, no sizing
+    SetWindowLong( m_hwnd, GWL_STYLE, style );
+}
+
+
+void ConsoleCommand::disable_console_system_buttons2()
 {
     HWND w = GetConsoleWindow();
     HMENU m = GetSystemMenu( w, FALSE );

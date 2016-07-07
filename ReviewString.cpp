@@ -94,7 +94,7 @@ std::wstring ReviewString::review()
                 if ( ! first_content.empty() )
                 {
                     Utility::cls();
-                    stdcout << L"\t" << first_content << "\n";
+                    stdcout << L"\n\t" << first_content << "\n";
                     first_content.clear();
                 }
 

@@ -19,6 +19,7 @@ public:
     void set_console_color( WORD color );
     void show_console_cursor( BOOL visible = true );
     void disable_console_system_buttons();
+    void disable_console_system_buttons2();
 
 public:
 
@@ -26,6 +27,7 @@ public:
     HANDLE cin;
     UINT m_cp;
     UINT m_output_cp;
+    HWND m_hwnd;
     CONSOLE_SCREEN_BUFFER_INFOEX m_screen_buffer;
     CONSOLE_FONT_INFOEX m_font_info;
 };
